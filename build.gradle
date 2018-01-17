@@ -1,0 +1,60 @@
+import org.gradle.internal.os.OperatingSystem
+
+group 'blue.sparse'
+version '1.0-SNAPSHOT'
+
+switch ( OperatingSystem.current() ) {
+    case OperatingSystem.WINDOWS:
+        project.ext.lwjglNatives = "natives-windows"
+        break
+    case OperatingSystem.LINUX:
+        project.ext.lwjglNatives = "natives-linux"
+        break
+    case OperatingSystem.MAC_OS:
+        project.ext.lwjglNatives = "natives-macos"
+        break
+}
+
+project.ext.lwjglVersion = "3.1.3"
+
+buildscript {
+    ext.kotlin_version = '1.2.10'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://sparse.blue/maven' }
+}
+
+dependencies {
+    compile "blue.sparse:math:1.1"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.lwjgl:lwjgl:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
