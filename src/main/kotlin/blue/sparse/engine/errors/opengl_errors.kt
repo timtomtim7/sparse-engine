@@ -1,4 +1,4 @@
-package blue.sparse.engine
+package blue.sparse.engine.errors
 
 import org.lwjgl.opengl.GL11.GL_NO_ERROR
 import org.lwjgl.opengl.GL11.glGetError

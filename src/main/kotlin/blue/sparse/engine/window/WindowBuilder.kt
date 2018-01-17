@@ -1,4 +1,4 @@
-package blue.sparse.engine
+package blue.sparse.engine.window
 
 class WindowBuilder(var width: Int = 1280, var height: Int = 720)
 {
@@ -9,7 +9,7 @@ class WindowBuilder(var width: Int = 1280, var height: Int = 720)
 	var title: String = "Untitled"
 	var visible: Boolean = true
 	var parent: Window? = null
-	var vSync: Boolean = false
+	var vSync: Boolean = true
 	var cursorMode: Window.CursorMode = Window.CursorMode.NORMAL
 
 	fun width(width: Int): WindowBuilder

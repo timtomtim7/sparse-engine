@@ -1,9 +1,9 @@
-package blue.sparse.engine
+package blue.sparse.engine.window
 
-import blue.sparse.engine.exception.GLFWException
+import blue.sparse.engine.errors.GLFWException
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
-import org.lwjgl.system.MemoryStack
+import org.lwjgl.opengl.GL11.glViewport
 
 class Window(initial: Initial)
 {
@@ -14,7 +14,7 @@ class Window(initial: Initial)
 			resizable: Boolean = false,
 			maximized: Boolean = false,
 			preserveAspectRatio: Boolean = false,
-			mode: Window.Mode = Mode.NORMAL,
+			mode: Mode = Mode.NORMAL,
 			visible: Boolean = true,
 			parent: Window? = null
 	) : this(Initial(title, width, height, resizable, maximized, preserveAspectRatio, mode, visible, parent))
@@ -32,7 +32,7 @@ class Window(initial: Initial)
 		get() = intArrayOf(0).apply { glfwGetWindowSize(pointer, null as IntArray?, this) }[0]
 		set(value) = glfwSetWindowSize(pointer, width, value)
 
-	var vSync: Boolean = false
+	var vSync: Boolean = true
 		set(value)
 		{
 			field = value
@@ -110,6 +110,8 @@ class Window(initial: Initial)
 			glfwSetWindowAspectRatio(pointer, width, height)
 		}
 
+		glfwSetWindowRefreshCallback(pointer) { glViewport(0, 0, this.width, this.height) }
+
 		glfwShowWindow(pointer)
 		vSync = initial.vSync
 		mode = initial.mode
@@ -170,7 +172,7 @@ class Window(initial: Initial)
 			val resizable: Boolean = false,
 			val maximized: Boolean = false,
 			val preserveAspectRatio: Boolean = false,
-			val mode: Window.Mode = Mode.NORMAL,
+			val mode: Mode = Mode.NORMAL,
 			val visible: Boolean = true,
 			val parent: Window? = null,
 			val vSync: Boolean = true,
