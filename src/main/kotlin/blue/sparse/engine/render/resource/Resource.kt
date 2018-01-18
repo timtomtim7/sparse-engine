@@ -1,7 +1,5 @@
 package blue.sparse.engine.render.resource
 
-import java.util.concurrent.ConcurrentSkipListSet
-
 abstract class Resource
 {
 	init
@@ -19,7 +17,7 @@ abstract class Resource
 
 	companion object
 	{
-		private val resources = ConcurrentSkipListSet<Resource>()
+		private val resources = HashSet<Resource>()
 
 		internal fun deleteAll()
 		{

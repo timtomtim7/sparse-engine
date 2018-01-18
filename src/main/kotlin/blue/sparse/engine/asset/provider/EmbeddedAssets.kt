@@ -5,9 +5,10 @@ import java.io.InputStream
 
 object EmbeddedAssets : AssetProvider
 {
-	override fun get(name: String): Asset
+	override fun get(path: String): Asset?
 	{
-		return EmbeddedAsset(name)
+		if(ClassLoader.getSystemResource(path) == null) return null
+		return EmbeddedAsset(path)
 	}
 
 	class EmbeddedAsset internal constructor(override val path: String): Asset

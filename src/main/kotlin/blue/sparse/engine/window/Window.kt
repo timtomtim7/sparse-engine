@@ -116,6 +116,10 @@ class Window(initial: Initial)
 		vSync = initial.vSync
 		mode = initial.mode
 		cursorMode = initial.cursorMode
+
+//		glfwSetCursorPosCallback(pointer) { _, x, y ->
+//
+//		}
 	}
 
 	fun iconify() = glfwIconifyWindow(pointer)

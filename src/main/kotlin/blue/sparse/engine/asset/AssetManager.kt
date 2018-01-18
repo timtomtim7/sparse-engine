@@ -3,7 +3,7 @@ package blue.sparse.engine.asset
 import blue.sparse.engine.asset.provider.*
 import java.io.File
 
-object AssetManager
+object AssetManager: AssetProvider
 {
 	private val providers = ArrayList<AssetProvider>()
 
@@ -19,13 +19,13 @@ object AssetManager
 		providers.add(provider)
 	}
 
-	operator fun get(path: String): List<Asset>
+	override operator fun get(path: String): Asset
 	{
-		return providers.mapNotNull { it[path].takeIf { it.exists } }
+		return getAll(path).last()
 	}
 
-	fun getLast(path: String): Asset?
+	fun getAll(path: String): List<Asset>
 	{
-		return get(path).lastOrNull()
+		return providers.mapNotNull { it[path] }
 	}
 }

@@ -21,9 +21,10 @@ class AssetArchive(val archive: File) : AssetProvider
 		zip.close()
 	}
 
-	override fun get(name: String): Asset
+	override fun get(path: String): Asset?
 	{
-		return ZipAsset(name)
+		if(zip.getEntry(path) == null) return null
+		return ZipAsset(path)
 	}
 
 	inner class ZipAsset internal constructor(override val path: String) : Asset

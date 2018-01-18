@@ -6,21 +6,37 @@ import blue.sparse.math.util.DeltaTimer
 import blue.sparse.math.util.FrequencyTimer
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 
 class SparseEngine(val window: Window, val game: SparseGame, val targetFrameRate: Double = 0.0)
 {
 	var frameRate: Double = 0.0
 		private set
 
+	var running: Boolean = false
+		private set
+
 	init
 	{
 //		if (GL.getCapabilities() == null)
-			GL.createCapabilities()
+//			GL.createCapabilities()
+	}
+
+	private fun initGL()
+	{
+		GL.createCapabilities()
+		glEnable(GL_CULL_FACE)
+		glFrontFace(GL_CW)
+		glCullFace(GL_BACK)
 	}
 
 	fun start()
 	{
-		GL.createCapabilities()
+		if(running) throw IllegalStateException("Engine already running")
+		running = true
+
+		initGL()
+
 		game.init(this)
 
 		var frameCounter = 0.0
@@ -59,5 +75,6 @@ class SparseEngine(val window: Window, val game: SparseGame, val targetFrameRate
 		}
 
 		window.destroy()
+		running = false
 	}
 }

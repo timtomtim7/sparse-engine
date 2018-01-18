@@ -4,7 +4,7 @@ import blue.sparse.engine.asset.Asset
 
 interface AssetProvider
 {
-	operator fun get(name: String): Asset
+	operator fun get(path: String): Asset?
 
 	fun close() {}
 }
