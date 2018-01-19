@@ -1,9 +1,13 @@
 package blue.sparse.engine.window
 
+import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.errors.GLFWException
+import blue.sparse.engine.util.ColorFormat
 import blue.sparse.engine.window.input.Input
+import blue.sparse.extensions.toByteBuffer
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
+import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11.glViewport
 
 class Window(initial: Initial)
@@ -131,21 +135,20 @@ class Window(initial: Initial)
 
 	fun requestAttention() = glfwRequestWindowAttention(id)
 
-	//TODO: image.toByteBuffer
-//	fun setIcon(asset: Asset)
-//	{
-//		val image = asset.readImage()
-//		val glfwImage = GLFWImage.malloc()
-//		glfwImage.set(image.width, image.height, image.toByteBuffer(ColorFormat.RGBA))
-//
-//		val glfwBuffer = GLFWImage.malloc(1)
-//		glfwBuffer.put(0, glfwImage)
-//
-//		glfwSetWindowIcon(id, glfwBuffer)
-//
-//		glfwBuffer.free()
-//		glfwImage.free()
-//	}
+	fun setIcon(asset: Asset)
+	{
+		val image = asset.readImage()
+		val glfwImage = GLFWImage.malloc()
+		glfwImage.set(image.width, image.height, image.toByteBuffer(ColorFormat.RGBA))
+
+		val glfwBuffer = GLFWImage.malloc(1)
+		glfwBuffer.put(0, glfwImage)
+
+		glfwSetWindowIcon(id, glfwBuffer)
+
+		glfwBuffer.free()
+		glfwImage.free()
+	}
 
 	fun pollEvents()
 	{

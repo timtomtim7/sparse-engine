@@ -15,7 +15,9 @@ object AssetManager: AssetProvider
 
 	fun registerProvider(provider: AssetProvider)
 	{
+		if(provider == this) return
 		if(provider in providers) throw IllegalArgumentException("Provider already registered.")
+
 		providers.add(provider)
 	}
 
