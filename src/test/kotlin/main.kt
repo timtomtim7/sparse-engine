@@ -8,7 +8,7 @@ fun main(args: Array<String>)
 		preserveAspectRatio()
 	}
 
-	val engine = SparseEngine(window, TestGame())
+	val engine = SparseEngine(window, TestGame::class)
 
 	engine.start()
 }

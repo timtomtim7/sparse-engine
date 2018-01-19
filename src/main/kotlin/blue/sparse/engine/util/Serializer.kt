@@ -4,7 +4,7 @@ import blue.sparse.math.matrices.Matrix4f
 import blue.sparse.math.vectors.floats.*
 import java.nio.ByteBuffer
 
-interface Serializer<T>
+interface Serializer<T: Any>
 {
 	fun put(buffer: ByteBuffer, value: T)
 	fun get(buffer: ByteBuffer): T
@@ -36,9 +36,9 @@ interface Serializer<T>
 			)
 		}
 
-		inline fun <reified T> register(serializer: Serializer<T>) = register(T::class.java, serializer)
+		inline fun <reified T: Any> register(serializer: Serializer<T>) = register(T::class.java, serializer)
 
-		inline fun <reified T> register(crossinline put: ByteBuffer.(T) -> Unit, crossinline get: ByteBuffer.() -> T)
+		inline fun <reified T: Any> register(crossinline put: ByteBuffer.(T) -> Unit, crossinline get: ByteBuffer.() -> T)
 		{
 			register(T::class.java, object : Serializer<T>
 			{
@@ -47,17 +47,17 @@ interface Serializer<T>
 			})
 		}
 
-		inline fun <reified T> get() = get(T::class.java)
-		inline fun <reified T> serialize(target: ByteBuffer, value: T) = get<T>().put(target, value)
+		inline fun <reified T: Any> get() = get(T::class.java)
+		inline fun <reified T: Any> serialize(target: ByteBuffer, value: T) = get<T>().put(target, value)
 
-		fun <T> register(clazz: Class<T>, serializer: Serializer<T>)
+		fun <T: Any> register(clazz: Class<T>, serializer: Serializer<T>)
 		{
 			if (clazz in registered) throw IllegalStateException("${clazz.name} already registered")
 			registered[clazz] = serializer
 		}
 
 		@Suppress("UNCHECKED_CAST")
-		fun <T> get(clazz: Class<T>): Serializer<T>
+		fun <T: Any> get(clazz: Class<T>): Serializer<T>
 		{
 			val serializer = registered[clazz] ?: throw IllegalStateException("Serializer for ${clazz.name} not registered")
 			return serializer as Serializer<T>

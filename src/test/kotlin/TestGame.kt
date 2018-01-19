@@ -1,26 +1,55 @@
 import blue.sparse.engine.SparseGame
 import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.render.resource.bind
+import blue.sparse.engine.render.resource.model.*
 import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.engine.window.input.MouseButton
-import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL15.*
-import org.lwjgl.opengl.GL20.*
+import blue.sparse.math.vectors.floats.Vector2f
+import blue.sparse.math.vectors.floats.Vector3f
 
 class TestGame : SparseGame()
 {
-	var vbo: Int = 0
-	lateinit var shader: ShaderProgram
+	//	val vbo: Int
+	val shader: ShaderProgram
+	val array: VertexArray
 
-	override fun init()
+	init
 	{
-		vbo = glGenBuffers()
-		glBindBuffer(GL_ARRAY_BUFFER, vbo)
-		glBufferData(GL_ARRAY_BUFFER, floatArrayOf(
-				-1f, -1f,
-				0f, 1f,
-				1f, -1f
-		), GL_STATIC_DRAW)
+//		val layout = VertexLayout()
+//		layout.add<Vector2f>()
+//		layout.add<Vector3f>()
+
+		val positionLayout = VertexLayout()
+		positionLayout.add<Vector2f>()
+
+		val colorLayout = VertexLayout()
+		colorLayout.add<Vector3f>()
+
+//		val buffer = VertexBuffer()
+//		buffer.add(
+//				Vector2f(-1f, -1f), Vector3f(1f, 0f, 0f),
+//				Vector2f(0f, 1f), Vector3f(0f, 1f, 0f),
+//				Vector2f(1f, -1f), Vector3f(0f, 0f, 1f)
+//		)
+
+		val positions = VertexBuffer()
+		positions.add(
+				Vector2f(-1f,  -1f),
+				Vector2f(0f,  1f),
+				Vector2f(1f,  -1f)
+		)
+
+		val colors = VertexBuffer()
+		colors.add(
+				Vector3f(1f, 0f, 0f),
+				Vector3f(0f, 1f, 0f),
+				Vector3f(0f, 0f, 1f)
+		)
+
+		array = VertexArray()
+		array.add(positions, positionLayout)
+		array.add(colors, colorLayout)
+		//array.add(buffer, layout)
 
 		shader = ShaderProgram(
 				fragment = Asset["fragment.fs"],
@@ -31,22 +60,14 @@ class TestGame : SparseGame()
 	override fun update(delta: Float)
 	{
 		if(input[MouseButton.LEFT].pressed)
-			println("Pressed")
-		if(input[MouseButton.LEFT].released)
-			println("Released")
+			println("Left")
 
-		if(input.mouseMoved)
-			println(input.mousePosition)
+		if(input[MouseButton.RIGHT].pressed)
+			println("Right")
 	}
 
 	override fun render(delta: Float)
 	{
-		shader.bind {
-			glBindBuffer(GL_ARRAY_BUFFER, vbo)
-			glEnableVertexAttribArray(0)
-			glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0)
-			glDrawArrays(GL_TRIANGLES, 0, 3)
-			glDisableVertexAttribArray(0)
-		}
+		shader.bind { array.render() }
 	}
 }

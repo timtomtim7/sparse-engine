@@ -1,11 +1,13 @@
 #version 330 core
 
-layout(location = 0) in vec2 vPosition;
+attribute vec2 aPosition;
+attribute vec3 aColor;
 
-out vec3 position;
+out vec3 vColor;
 
 void main()
 {
-	position = vec3(vPosition, 0);
-	gl_Position = vec4(vPosition, 0, 1);
+	vColor = aColor;
+
+	gl_Position = vec4(aPosition, 0, 1);
 }

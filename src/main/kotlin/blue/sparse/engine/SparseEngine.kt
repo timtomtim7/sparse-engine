@@ -7,13 +7,18 @@ import blue.sparse.math.util.FrequencyTimer
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
-class SparseEngine(val window: Window, val game: SparseGame, val targetFrameRate: Double = 0.0)
+class SparseEngine<G: SparseGame>(val window: Window, val gameClass: KClass<G>, val targetFrameRate: Double = 0.0)
 {
 	var frameRate: Double = 0.0
 		private set
 
 	var running: Boolean = false
+		private set
+
+	lateinit var game: G
 		private set
 
 	init
@@ -37,6 +42,7 @@ class SparseEngine(val window: Window, val game: SparseGame, val targetFrameRate
 
 		initGL()
 
+		game = gameClass.primaryConstructor!!.call()
 		game.init(this)
 
 		var frameCounter = 0.0
@@ -57,18 +63,16 @@ class SparseEngine(val window: Window, val game: SparseGame, val targetFrameRate
 
 				printOpenGLErrors()
 				window.swapBuffers()
-				frameRate = frameCounter / secondTimer.count
 
 				frameCounter++
-				if (secondTimer.count >= 1)
-				{
-					val frames = frameCounter / secondTimer.count
-					secondTimer.use()
-					val ms = 1000.0 / frames
+				frameRate = frameCounter / secondTimer.count
 
-					println(String.format("FPS: %8.3f | MS: %5.2f", frames, ms))
-					frameCounter -= frames
-					secondTimer.use()
+				if (secondTimer.use())
+				{
+					val ms = 1000.0 / frameRate
+
+					println(String.format("FPS: %8.3f | MS: %5.2f", frameRate, ms))
+					frameCounter -= frameRate
 				}
 			}
 			window.pollEvents()

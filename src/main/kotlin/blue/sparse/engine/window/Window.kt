@@ -108,10 +108,7 @@ class Window(initial: Initial)
 			glfwSetWindowPos(id, (vidMode.width() - initial.width) / 2, (vidMode.height() - initial.height) / 2)
 
 		if (initial.preserveAspectRatio)
-		{
-			println("Preserve aspect ratio")
 			glfwSetWindowAspectRatio(id, width, height)
-		}
 
 		glfwSetWindowRefreshCallback(id) { glViewport(0, 0, this.width, this.height) }
 
