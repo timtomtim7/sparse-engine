@@ -38,6 +38,7 @@ repositories {
 dependencies {
     compile "blue.sparse:math:1.1"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:1.2.10"
     compile "org.lwjgl:lwjgl:$lwjglVersion"
     compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
     compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"

@@ -6,9 +6,10 @@ interface Bindable
 	fun unbind()
 }
 
-inline fun <T: Bindable> T.bind(body: T.() -> Unit)
+inline fun <T: Bindable, R> T.bind(body: T.() -> R): R
 {
 	bind()
-	apply(body)
+	val result = run(body)
 	unbind()
+	return result
 }

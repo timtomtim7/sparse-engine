@@ -1,6 +1,7 @@
 package blue.sparse.engine.window
 
 import blue.sparse.engine.errors.GLFWException
+import blue.sparse.engine.window.input.Input
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL11.glViewport
@@ -19,18 +20,18 @@ class Window(initial: Initial)
 			parent: Window? = null
 	) : this(Initial(title, width, height, resizable, maximized, preserveAspectRatio, mode, visible, parent))
 
-	private val pointer: Long
+	internal val id: Long
 
 	val requestingClose: Boolean
-		get() = glfwWindowShouldClose(pointer)
+		get() = glfwWindowShouldClose(id)
 
 	var width: Int
-		get() = intArrayOf(0).apply { glfwGetWindowSize(pointer, this, null as IntArray?) }[0]
-		set(value) = glfwSetWindowSize(pointer, value, height)
+		get() = intArrayOf(0).apply { glfwGetWindowSize(id, this, null as IntArray?) }[0]
+		set(value) = glfwSetWindowSize(id, value, height)
 
 	var height: Int
-		get() = intArrayOf(0).apply { glfwGetWindowSize(pointer, null as IntArray?, this) }[0]
-		set(value) = glfwSetWindowSize(pointer, width, value)
+		get() = intArrayOf(0).apply { glfwGetWindowSize(id, null as IntArray?, this) }[0]
+		set(value) = glfwSetWindowSize(id, width, value)
 
 	var vSync: Boolean = true
 		set(value)
@@ -40,23 +41,25 @@ class Window(initial: Initial)
 		}
 
 	var visible: Boolean
-		get() = glfwGetWindowAttrib(pointer, GLFW_VISIBLE) == GLFW_TRUE
+		get() = glfwGetWindowAttrib(id, GLFW_VISIBLE) == GLFW_TRUE
 		set(value) = when(value)
 		{
-			true -> glfwShowWindow(pointer)
-			false -> glfwHideWindow(pointer)
+			true -> glfwShowWindow(id)
+			false -> glfwHideWindow(id)
 		}
 
-	val resizable: Boolean get() = glfwGetWindowAttrib(pointer, GLFW_RESIZABLE) == GLFW_TRUE
-	val focused: Boolean get() = glfwGetWindowAttrib(pointer, GLFW_FOCUSED) == GLFW_TRUE
-	val iconified: Boolean get() = glfwGetWindowAttrib(pointer, GLFW_ICONIFIED) == GLFW_TRUE
-	val maximized: Boolean get() = glfwGetWindowAttrib(pointer, GLFW_MAXIMIZED) == GLFW_TRUE
+	val resizable: Boolean get() = glfwGetWindowAttrib(id, GLFW_RESIZABLE) == GLFW_TRUE
+	val focused: Boolean get() = glfwGetWindowAttrib(id, GLFW_FOCUSED) == GLFW_TRUE
+	val iconified: Boolean get() = glfwGetWindowAttrib(id, GLFW_ICONIFIED) == GLFW_TRUE
+	val maximized: Boolean get() = glfwGetWindowAttrib(id, GLFW_MAXIMIZED) == GLFW_TRUE
 
 	val mode: Mode
 
 	var cursorMode: CursorMode
-		get() = CursorMode[glfwGetInputMode(pointer, GLFW_CURSOR)]
-		set(value) = glfwSetInputMode(pointer, GLFW_CURSOR, value.id)
+		get() = CursorMode[glfwGetInputMode(id, GLFW_CURSOR)]
+		set(value) = glfwSetInputMode(id, GLFW_CURSOR, value.id)
+
+	val input: Input
 
 	init
 	{
@@ -91,57 +94,76 @@ class Window(initial: Initial)
 			height = initial.height
 		}
 
-		pointer = glfwCreateWindow(
+		id = glfwCreateWindow(
 				width, height,
 				initial.title,
 				if (initial.mode.fullscreen) primaryMonitor else 0,
-				initial.parent?.pointer ?: 0
+				initial.parent?.id ?: 0
 		)
 
-		if (pointer == 0L) throw GLFWException("Window creation failed.")
-		glfwMakeContextCurrent(pointer)
+		if (id == 0L) throw GLFWException("Window creation failed.")
+		glfwMakeContextCurrent(id)
 
 		if(!initial.mode.fullscreen && !initial.maximized)
-			glfwSetWindowPos(pointer, (vidMode.width() - initial.width) / 2, (vidMode.height() - initial.height) / 2)
+			glfwSetWindowPos(id, (vidMode.width() - initial.width) / 2, (vidMode.height() - initial.height) / 2)
 
 		if (initial.preserveAspectRatio)
 		{
 			println("Preserve aspect ratio")
-			glfwSetWindowAspectRatio(pointer, width, height)
+			glfwSetWindowAspectRatio(id, width, height)
 		}
 
-		glfwSetWindowRefreshCallback(pointer) { glViewport(0, 0, this.width, this.height) }
+		glfwSetWindowRefreshCallback(id) { glViewport(0, 0, this.width, this.height) }
 
-		glfwShowWindow(pointer)
+		glfwShowWindow(id)
 		vSync = initial.vSync
 		mode = initial.mode
 		cursorMode = initial.cursorMode
 
-//		glfwSetCursorPosCallback(pointer) { _, x, y ->
+		input = Input(this)
+
+//		glfwSetCursorPosCallback(id) { _, x, y ->
 //
 //		}
 	}
 
-	fun iconify() = glfwIconifyWindow(pointer)
-	fun maximize() = glfwMaximizeWindow(pointer)
-	fun restore() = glfwRestoreWindow(pointer)
-	fun focus() = glfwFocusWindow(pointer)
+	fun iconify() = glfwIconifyWindow(id)
+	fun maximize() = glfwMaximizeWindow(id)
+	fun restore() = glfwRestoreWindow(id)
+	fun focus() = glfwFocusWindow(id)
 
-	fun requestAttention() = glfwRequestWindowAttention(pointer)
+	fun requestAttention() = glfwRequestWindowAttention(id)
+
+	//TODO: image.toByteBuffer
+//	fun setIcon(asset: Asset)
+//	{
+//		val image = asset.readImage()
+//		val glfwImage = GLFWImage.malloc()
+//		glfwImage.set(image.width, image.height, image.toByteBuffer(ColorFormat.RGBA))
+//
+//		val glfwBuffer = GLFWImage.malloc(1)
+//		glfwBuffer.put(0, glfwImage)
+//
+//		glfwSetWindowIcon(id, glfwBuffer)
+//
+//		glfwBuffer.free()
+//		glfwImage.free()
+//	}
 
 	fun pollEvents()
 	{
+		input.update()
 		glfwPollEvents()
 	}
 
 	fun swapBuffers()
 	{
-		glfwSwapBuffers(pointer)
+		glfwSwapBuffers(id)
 	}
 
 	fun destroy(terminate: Boolean = true)
 	{
-		glfwDestroyWindow(pointer)
+		glfwDestroyWindow(id)
 		if (terminate)
 			glfwTerminate()
 	}

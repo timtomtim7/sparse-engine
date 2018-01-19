@@ -1,8 +1,8 @@
-import blue.sparse.engine.SparseEngine
 import blue.sparse.engine.SparseGame
 import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.render.resource.bind
 import blue.sparse.engine.render.resource.shader.ShaderProgram
+import blue.sparse.engine.window.input.MouseButton
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL15.*
 import org.lwjgl.opengl.GL20.*
@@ -12,7 +12,7 @@ class TestGame : SparseGame()
 	var vbo: Int = 0
 	lateinit var shader: ShaderProgram
 
-	override fun init(engine: SparseEngine)
+	override fun init()
 	{
 		vbo = glGenBuffers()
 		glBindBuffer(GL_ARRAY_BUFFER, vbo)
@@ -30,7 +30,13 @@ class TestGame : SparseGame()
 
 	override fun update(delta: Float)
 	{
+		if(input[MouseButton.LEFT].pressed)
+			println("Pressed")
+		if(input[MouseButton.LEFT].released)
+			println("Released")
 
+		if(input.mouseMoved)
+			println(input.mousePosition)
 	}
 
 	override fun render(delta: Float)
