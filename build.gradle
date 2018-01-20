@@ -32,11 +32,12 @@ apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
+//    mavenLocal()
     maven { url 'https://sparse.blue/maven' }
 }
 
 dependencies {
-    compile "blue.sparse:math:1.1.1"
+    compile "blue.sparse:math:1.1.2"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:1.2.10"
     compile "org.lwjgl:lwjgl:$lwjglVersion"

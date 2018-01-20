@@ -2,6 +2,7 @@ package blue.sparse.engine.render.camera
 
 import blue.sparse.math.FloatTransform
 import blue.sparse.math.matrices.Matrix4f
+import blue.sparse.math.vectors.floats.*
 
 class Camera(
 		var projection: Matrix4f,
@@ -10,12 +11,31 @@ class Camera(
 )
 {
 	val viewMatrix get() = transform.inverseMatrix
-
 	val viewProjectionMatrix get() = projection * viewMatrix
 
 	fun update(delta: Float)
 	{
 		controller?.update(delta)
+	}
+
+	fun lookAt(target: Vector3f, up: Vector3f = Axis.Y.vector3)
+	{
+		transform.lookAway(-target, up)
+	}
+
+	fun moveTo(destination: Vector3f)
+	{
+		transform.setTranslation(destination)
+	}
+
+	fun move(movement: Vector3f)
+	{
+		transform.translate(-movement)
+	}
+
+	fun move(direction: Vector3f, amount: Float)
+	{
+		move(normalize(direction) * amount)
 	}
 
 	companion object

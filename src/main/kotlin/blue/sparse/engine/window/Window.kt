@@ -83,6 +83,7 @@ class Window(initial: Initial)
 		glfwWindowHint(GLFW_DECORATED, if (initial.mode.decorated) GLFW_TRUE else GLFW_FALSE)
 		glfwWindowHint(GLFW_RESIZABLE, if (initial.resizable) GLFW_TRUE else GLFW_FALSE)
 		glfwWindowHint(GLFW_MAXIMIZED, if (initial.maximized) GLFW_TRUE else GLFW_FALSE)
+		glfwWindowHint(GLFW_SAMPLES, 4)
 
 		val primaryMonitor = glfwGetPrimaryMonitor()
 

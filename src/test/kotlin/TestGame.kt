@@ -2,12 +2,13 @@ import blue.sparse.engine.SparseGame
 import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.asset.model.WavefrontModelLoader
 import blue.sparse.engine.render.camera.Camera
-import blue.sparse.engine.render.camera.FirstPerson
+import blue.sparse.engine.render.camera.PanOrbit
 import blue.sparse.engine.render.resource.Texture
 import blue.sparse.engine.render.resource.bind
 import blue.sparse.engine.render.resource.model.Model
 import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.math.vectors.floats.Vector3f
+import blue.sparse.math.vectors.floats.normalize
 
 class TestGame : SparseGame()
 {
@@ -17,8 +18,9 @@ class TestGame : SparseGame()
 	private val model: Model = WavefrontModelLoader.load(Asset["models/test_scene_bigger.obj"])
 
 	private val camera = Camera.perspective(100f, 16f / 9f, 0.1f, 1000f).apply {
-		transform.translate(Vector3f(0f, 0f, -10f))
-		controller = FirstPerson(this)
+		transform.translate(normalize(Vector3f(1f, 1f, 1f)) * 10f)
+		lookAt(Vector3f(0f))
+		controller = PanOrbit(this)
 	}
 
 	override fun update(delta: Float)

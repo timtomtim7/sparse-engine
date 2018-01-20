@@ -8,6 +8,7 @@ import blue.sparse.math.util.FrequencyTimer
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13.GL_MULTISAMPLE
 import org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -32,6 +33,7 @@ object SparseEngine
 	private fun initGL()
 	{
 		GL.createCapabilities()
+		glEnable(GL_MULTISAMPLE)
 		glEnable(GL_CULL_FACE)
 		glFrontFace(GL_CW)
 		glCullFace(GL_BACK)
