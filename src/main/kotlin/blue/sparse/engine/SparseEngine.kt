@@ -5,8 +5,10 @@ import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.window.Window
 import blue.sparse.math.util.DeltaTimer
 import blue.sparse.math.util.FrequencyTimer
-import org.lwjgl.opengl.*
+import org.lwjgl.opengl.GL
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
@@ -30,12 +32,12 @@ object SparseEngine
 	private fun initGL()
 	{
 		GL.createCapabilities()
-//		glEnable(GL_CULL_FACE)
-//		glFrontFace(GL_CW)
-//		glCullFace(GL_BACK)
+		glEnable(GL_CULL_FACE)
+		glFrontFace(GL_CW)
+		glCullFace(GL_BACK)
 		glEnable(GL_TEXTURE_2D)
 		glEnable(GL_DEPTH_TEST)
-		glEnable(GL32.GL_DEPTH_CLAMP)
+		glEnable(GL_DEPTH_CLAMP)
 	}
 
 	fun start(window: Window, gameClass: KClass<out SparseGame>, targetFrameRate: Double = 0.0)

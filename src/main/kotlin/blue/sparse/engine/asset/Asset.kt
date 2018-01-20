@@ -14,6 +14,7 @@ interface Asset
 
 	fun readBytes() = inputStream.readBytes()
 	fun readText() = inputStream.readText()
+	fun readLines() = inputStream.bufferedReader().use { it.readLines() }
 	fun readImage() = inputStream.readImage()
 
 	companion object : AssetProvider

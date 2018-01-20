@@ -1,7 +1,8 @@
 package blue.sparse.engine.asset.model
 
-import blue.sparse.engine.render.resource.model.Model
-import java.io.InputStream
+import blue.sparse.engine.asset.Asset
+import blue.sparse.engine.render.resource.model.*
+import blue.sparse.math.vectors.floats.*
 
 object WavefrontModelLoader: ModelLoader
 {
@@ -10,8 +11,82 @@ object WavefrontModelLoader: ModelLoader
 		return extension == "obj"
 	}
 
-	override fun load(input: InputStream): Model
+	override fun load(asset: Asset): Model
 	{
-		TODO("not implemented")
+		val lines = asset.readLines()
+				.filter { it.isNotBlank() && !it.startsWith("#") }
+				.mapNotNull { it.split(" ").takeIf { it.size > 1 } }
+
+		val positions = ArrayList<Vector3f>()
+		val texCoords = ArrayList<Vector2f>()
+		val normals = ArrayList<Vector3f>()
+
+		val tripleIndices = ArrayList<Triple<Int, Int?, Int?>>()
+
+		for (line in lines)
+		{
+			when(line.first())
+			{
+				"v" -> positions.add(Vector3f(line[1].toFloat(), line[2].toFloat(), line[3].toFloat()))
+				"vt" -> texCoords.add(Vector2f(line[1].toFloat(), line[2].toFloat()))
+				"vn" -> normals.add(Vector3f(line[1].toFloat(), line[2].toFloat(), line[3].toFloat()))
+				"f" -> {
+					for(i in 1 until line.size)
+					{
+						val faceIndex = line[i].split("/")
+
+						tripleIndices.add(Triple(
+								faceIndex[0].toInt() - 1,
+								faceIndex.getOrNull(1)?.toIntOrNull()?.let { it - 1 },
+								faceIndex.getOrNull(2)?.toIntOrNull()?.let { it - 1 }
+						))
+					}
+				}
+			}
+		}
+
+		val vertices = ArrayList<Vertex>()
+		val indices = ArrayList<Int>()
+
+		for (tripleIndex in tripleIndices)
+		{
+			val position = positions[tripleIndex.first]
+			val texCoord = tripleIndex.second?.let(texCoords::get)
+			val normal = tripleIndex.third?.let(normals::get)
+
+			val vertex = Vertex(position, texCoord, normal)
+			val index = vertices.indexOf(vertex)
+
+			if(index != -1)
+			{
+				indices.add(index)
+			}else{
+				indices.add(vertices.size)
+				vertices.add(vertex)
+			}
+		}
+
+		val defaultNormal = Axis.Z.vector3
+		val defaultTexCoord = Axis.Z.vector2
+
+		val buffer = VertexBuffer()
+		for (vertex in vertices)
+		{
+			buffer.add(vertex.position)
+			buffer.add(vertex.texCoord ?: defaultTexCoord)
+			buffer.add(vertex.normal ?: defaultNormal)
+		}
+
+		val layout = VertexLayout()
+		layout.add<Vector3f>()
+		layout.add<Vector2f>()
+		layout.add<Vector3f>()
+
+		val array = VertexArray()
+		array.add(buffer, layout)
+
+		return IndexedModel(array, indices.toIntArray())
 	}
+
+	private data class Vertex(val position: Vector3f, val texCoord: Vector2f?, val normal: Vector3f?)
 }

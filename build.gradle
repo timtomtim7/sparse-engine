@@ -32,8 +32,7 @@ apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
-    mavenLocal()
-//    maven { url 'https://sparse.blue/maven' }
+    maven { url 'https://sparse.blue/maven' }
 }
 
 dependencies {
