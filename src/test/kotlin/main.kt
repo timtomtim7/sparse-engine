@@ -6,7 +6,8 @@ fun main(args: Array<String>)
 	val window = Window(1280, 720) {
 		resizable()
 		icon("sparse_icon_64.png")
+		vSync(false)
 	}
 
-	SparseEngine(window, TestGame::class).start()
+	SparseEngine.start(window, TestGame::class, 100.0)
 }

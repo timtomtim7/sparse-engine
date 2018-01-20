@@ -1,49 +1,54 @@
 package blue.sparse.engine
 
 import blue.sparse.engine.errors.printOpenGLErrors
+import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.window.Window
 import blue.sparse.math.util.DeltaTimer
 import blue.sparse.math.util.FrequencyTimer
-import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.*
 import org.lwjgl.opengl.GL11.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-class SparseEngine<G: SparseGame>(val window: Window, val gameClass: KClass<G>, val targetFrameRate: Double = 0.0)
+object SparseEngine
 {
+	lateinit var window: Window
+		private set
+
+	lateinit var game: SparseGame
+		private set
+
+	var targetFrameRate: Double = 0.0
+		private set
+
 	var frameRate: Double = 0.0
 		private set
 
 	var running: Boolean = false
 		private set
 
-	lateinit var game: G
-		private set
-
-	init
-	{
-//		if (GL.getCapabilities() == null)
-//			GL.createCapabilities()
-	}
-
 	private fun initGL()
 	{
 		GL.createCapabilities()
-		glEnable(GL_CULL_FACE)
-		glFrontFace(GL_CW)
-		glCullFace(GL_BACK)
+//		glEnable(GL_CULL_FACE)
+//		glFrontFace(GL_CW)
+//		glCullFace(GL_BACK)
+		glEnable(GL_TEXTURE_2D)
+		glEnable(GL_DEPTH_TEST)
+		glEnable(GL32.GL_DEPTH_CLAMP)
 	}
 
-	fun start()
+	fun start(window: Window, gameClass: KClass<out SparseGame>, targetFrameRate: Double = 0.0)
 	{
 		if(running) throw IllegalStateException("Engine already running")
 		running = true
 
+		this.window = window
+		this.targetFrameRate = targetFrameRate
+
 		initGL()
 
 		game = gameClass.primaryConstructor!!.call()
-		game.init(this)
 
 		var frameCounter = 0.0
 		val frameTimer = FrequencyTimer(1.0 / targetFrameRate)
@@ -74,10 +79,13 @@ class SparseEngine<G: SparseGame>(val window: Window, val gameClass: KClass<G>, 
 					println(String.format("FPS: %8.3f | MS: %5.2f", frameRate, ms))
 					frameCounter -= frameRate
 				}
+
+				window.input.update()
 			}
 			window.pollEvents()
 		}
 
+		Resource.deleteAll()
 		window.destroy()
 		running = false
 	}

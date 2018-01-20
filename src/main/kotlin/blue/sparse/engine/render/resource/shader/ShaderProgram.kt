@@ -4,11 +4,13 @@ import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.errors.ResourceException
 import blue.sparse.engine.render.resource.Bindable
 import blue.sparse.engine.render.resource.Resource
+import blue.sparse.engine.render.resource.shader.uniform.Uniforms
 import org.lwjgl.opengl.GL20.*
 
 class ShaderProgram(shaders: Collection<Shader>) : Resource(), Bindable
 {
 	internal val id: Int
+	val uniforms: Uniforms
 
 	constructor(vararg shaders: Shader): this(shaders.toSet())
 
@@ -36,6 +38,8 @@ class ShaderProgram(shaders: Collection<Shader>) : Resource(), Bindable
 		glValidateProgram(id)
 		if (glGetProgrami(id, GL_VALIDATE_STATUS) == 0)
 			throw ResourceException("Shader program validation error: \n${glGetProgramInfoLog(id)}")
+
+		uniforms = Uniforms(this)
 	}
 
 	override fun bind()

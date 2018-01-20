@@ -165,7 +165,6 @@ class Window(initial: Initial)
 
 	fun pollEvents()
 	{
-		input.update()
 		glfwPollEvents()
 	}
 
