@@ -15,7 +15,8 @@ class VertexArray : Resource(), Bindable
 	private var attributeCount = 0
 	private val buffers = ArrayList<Int>()
 
-	private var triangleCount = 0
+	var size = 0
+		private set
 
 	init
 	{
@@ -28,7 +29,10 @@ class VertexArray : Resource(), Bindable
 		if (!buffer.checkLayout(layout))
 			throw IllegalArgumentException("Provided buffer does not conform to the layout.")
 
-		triangleCount = buffer.size / layout.size
+		if(!buffers.isEmpty() && size != buffer.size / layout.size)
+			throw IllegalArgumentException("Number of elements in buffer must be consistent ($size)")
+
+		size = buffer.size / layout.size
 
 		val bufferId = glGenBuffers()
 		buffers.add(bufferId)
@@ -66,12 +70,13 @@ class VertexArray : Resource(), Bindable
 	fun render()
 	{
 		bind {
-			glDrawArrays(GL_TRIANGLES, 0, triangleCount)
+			glDrawArrays(GL_TRIANGLES, 0, size)
 		}
 	}
 
 	override fun release()
 	{
 		glDeleteVertexArrays(id)
+		buffers.forEach(::glDeleteBuffers)
 	}
 }

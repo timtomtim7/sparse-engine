@@ -65,6 +65,13 @@ class Window(initial: Initial)
 
 	val input: Input
 
+	var icon: Asset? = null
+		set(value)
+		{
+			field = value
+			updateIcon(value)
+		}
+
 	init
 	{
 		GLFWErrorCallback.createPrint(System.err).set()
@@ -120,12 +127,9 @@ class Window(initial: Initial)
 		vSync = initial.vSync
 		mode = initial.mode
 		cursorMode = initial.cursorMode
+		icon = initial.icon
 
 		input = Input(this)
-
-//		glfwSetCursorPosCallback(id) { _, x, y ->
-//
-//		}
 	}
 
 	fun iconify() = glfwIconifyWindow(id)
@@ -135,8 +139,17 @@ class Window(initial: Initial)
 
 	fun requestAttention() = glfwRequestWindowAttention(id)
 
-	fun setIcon(asset: Asset)
+	private fun updateIcon(asset: Asset?)
 	{
+		if(asset == null)
+		{
+			val empty = GLFWImage.malloc(0)
+			glfwSetWindowIcon(id, empty)
+			empty.free()
+
+			return
+		}
+
 		val image = asset.readImage()
 		val glfwImage = GLFWImage.malloc()
 		glfwImage.set(image.width, image.height, image.toByteBuffer(ColorFormat.RGBA))
@@ -202,7 +215,8 @@ class Window(initial: Initial)
 			val visible: Boolean = true,
 			val parent: Window? = null,
 			val vSync: Boolean = true,
-			val cursorMode: CursorMode = CursorMode.NORMAL
+			val cursorMode: CursorMode = CursorMode.NORMAL,
+			val icon: Asset? = null
 	)
 
 	companion object

@@ -1,5 +1,7 @@
 package blue.sparse.engine.window
 
+import blue.sparse.engine.asset.Asset
+
 class WindowBuilder(var width: Int = 1280, var height: Int = 720)
 {
 	var resizable: Boolean = false
@@ -11,6 +13,7 @@ class WindowBuilder(var width: Int = 1280, var height: Int = 720)
 	var parent: Window? = null
 	var vSync: Boolean = true
 	var cursorMode: Window.CursorMode = Window.CursorMode.NORMAL
+	var icon: Asset? = null
 
 	fun width(width: Int): WindowBuilder
 	{
@@ -90,8 +93,19 @@ class WindowBuilder(var width: Int = 1280, var height: Int = 720)
 		return this
 	}
 
+	fun icon(asset: Asset?): WindowBuilder
+	{
+		this.icon = asset
+		return this
+	}
+
+	fun icon(path: String): WindowBuilder
+	{
+		return icon(Asset[path])
+	}
+
 	fun build(): Window
 	{
-		return Window(Window.Initial(title, width, height, resizable, maximized, preserveAspectRatio, mode, visible, parent, vSync, cursorMode))
+		return Window(Window.Initial(title, width, height, resizable, maximized, preserveAspectRatio, mode, visible, parent, vSync, cursorMode, icon))
 	}
 }

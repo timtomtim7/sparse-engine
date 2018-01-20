@@ -1,13 +1,12 @@
 #version 330 core
 
 attribute vec2 aPosition;
-attribute vec3 aColor;
+attribute vec2 aTexCoord;
 
-out vec3 vColor;
+out vec2 vTexCoord;
 
 void main()
 {
-	vColor = aColor;
-
+	vTexCoord = aTexCoord;
 	gl_Position = vec4(aPosition, 0, 1);
 }

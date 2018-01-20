@@ -9,6 +9,8 @@ object Size
 
 	init
 	{
+		register<Byte>(1)
+		register<Short>(2)
 		register<Int>(4)
 		register<Float>(4)
 		register<Vector2f>(2 * of<Float>())

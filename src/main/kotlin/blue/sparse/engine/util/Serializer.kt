@@ -16,8 +16,10 @@ interface Serializer<T: Any>
 
 		init
 		{
-			register({ putFloat(it) }, ByteBuffer::getFloat)
+			register({ put(it) }, ByteBuffer::get)
+			register({ putShort(it) }, ByteBuffer::getShort)
 			register({ putInt(it) }, ByteBuffer::getInt)
+			register({ putFloat(it) }, ByteBuffer::getFloat)
 			register(
 					{ putFloat(it.x).putFloat(it.y) },
 					{ Vector2f(float, float) }

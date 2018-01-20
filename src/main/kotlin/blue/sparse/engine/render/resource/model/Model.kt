@@ -1,11 +1,6 @@
 package blue.sparse.engine.render.resource.model
 
-import blue.sparse.engine.render.resource.Bindable
-
-interface Model : Bindable
+interface Model
 {
 	fun render()
-
-	override fun bind()
-	override fun unbind()
 }
