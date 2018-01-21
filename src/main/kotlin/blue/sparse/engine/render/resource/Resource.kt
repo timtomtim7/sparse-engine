@@ -22,12 +22,6 @@ abstract class Resource
 		internal fun deleteAll()
 		{
 			resources.toList().forEach(Resource::delete)
-
-//			val iter = resources.iterator()
-//			while(iter.hasNext())
-//				iter.next().delete()
-//			resources.iterator().forEach(Resource::delete)
-//			resources.forEach(Resource::delete)
 		}
 	}
 }

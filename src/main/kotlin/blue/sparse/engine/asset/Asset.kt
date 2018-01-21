@@ -20,5 +20,7 @@ interface Asset
 	companion object : AssetProvider
 	{
 		override fun get(path: String) = AssetManager[path]
+
+		fun optional(path: String) = AssetManager.optional(path)
 	}
 }

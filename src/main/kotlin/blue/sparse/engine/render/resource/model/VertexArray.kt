@@ -1,5 +1,6 @@
 package blue.sparse.engine.render.resource.model
 
+import blue.sparse.engine.errors.glCall
 import blue.sparse.engine.render.resource.*
 import blue.sparse.engine.util.Size
 import org.lwjgl.opengl.GL11.*
@@ -20,7 +21,7 @@ class VertexArray : Resource(), Bindable
 
 	init
 	{
-		id = glGenVertexArrays()
+		id = glCall { glGenVertexArrays() }
 	}
 
 	fun add(buffer: VertexBuffer, layout: VertexLayout)
@@ -34,11 +35,11 @@ class VertexArray : Resource(), Bindable
 
 		size = buffer.size / layout.size
 
-		val bufferId = glGenBuffers()
+		val bufferId = glCall { glGenBuffers() }
 		buffers.add(bufferId)
 
-		glBindBuffer(GL_ARRAY_BUFFER, bufferId)
-		glBufferData(GL_ARRAY_BUFFER, buffer.toByteBuffer(), GL_STATIC_DRAW)
+		glCall { glBindBuffer(GL_ARRAY_BUFFER, bufferId) }
+		glCall { glBufferData(GL_ARRAY_BUFFER, buffer.toByteBuffer(), GL_STATIC_DRAW) }
 
 		var pointer = 0L
 
@@ -49,8 +50,8 @@ class VertexArray : Resource(), Bindable
 
 			//TODO: Do not assume it's a `GL_FLOAT`! Currently ints can be added as attributes but will not work as intended.
 
-			glEnableVertexAttribArray(attributeCount)
-			glVertexAttribPointer(attributeCount, size / 4, GL_FLOAT, false, layout.size, pointer)
+			glCall { glEnableVertexAttribArray(attributeCount) }
+			glCall { glVertexAttribPointer(attributeCount, size / 4, GL_FLOAT, false, layout.size, pointer) }
 
 			pointer += size
 			attributeCount++
@@ -59,24 +60,24 @@ class VertexArray : Resource(), Bindable
 
 	override fun bind()
 	{
-		glBindVertexArray(id)
+		glCall { glBindVertexArray(id) }
 	}
 
 	override fun unbind()
 	{
-		glBindVertexArray(0)
+		glCall { glBindVertexArray(0) }
 	}
 
 	fun render()
 	{
 		bind {
-			glDrawArrays(GL_TRIANGLES, 0, size)
+			glCall { glDrawArrays(GL_TRIANGLES, 0, size) }
 		}
 	}
 
 	override fun release()
 	{
-		glDeleteVertexArrays(id)
-		buffers.forEach(::glDeleteBuffers)
+		glCall { glDeleteVertexArrays(id) }
+		buffers.forEach { glCall { glDeleteBuffers(it) } }
 	}
 }

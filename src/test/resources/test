@@ -1,0 +1,8 @@
+Scene {
+	ModelComponent("models/cube.obj") {
+		transform {
+			translation = vec3(0, 1, 0)
+			rotation = quat(vec3(0, 1, 0), 45)
+		}
+	}
+}

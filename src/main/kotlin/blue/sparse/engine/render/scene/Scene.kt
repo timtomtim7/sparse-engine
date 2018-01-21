@@ -4,11 +4,12 @@ import blue.sparse.engine.render.camera.Camera
 import blue.sparse.engine.render.resource.bind
 import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.engine.render.scene.component.Component
+import java.util.LinkedHashSet
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class Scene
 {
-	private val components = ArrayList<Component>()
+	private val components = LinkedHashSet<Component>()
 	private val addQueue = ConcurrentLinkedQueue<Component>()
 	private val removeQueue = ConcurrentLinkedQueue<Component>()
 

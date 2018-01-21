@@ -1,6 +1,8 @@
 package blue.sparse.engine.asset
 
 import blue.sparse.engine.asset.provider.*
+import blue.sparse.engine.errors.AssetNotFoundException
+import blue.sparse.logger.Logger
 import java.io.File
 
 object AssetManager: AssetProvider
@@ -23,7 +25,19 @@ object AssetManager: AssetProvider
 
 	override operator fun get(path: String): Asset
 	{
-		return getAll(path).last()
+		return optional(path) ?: throw AssetNotFoundException(path)
+	}
+
+	fun optional(path: String): Asset?
+	{
+		val all = getAll(path)
+		if(all.isEmpty())
+		{
+			Logger.warn("Asset not found \"$path\"")
+			return null
+		}
+		Logger.info("Retrieving asset \"$path\"")
+		return all.last()
 	}
 
 	fun getAll(path: String): List<Asset>

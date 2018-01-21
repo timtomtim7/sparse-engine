@@ -1,8 +1,8 @@
 #version 330 core
 
-attribute vec3 aPosition;
-attribute vec2 aTexCoord;
-attribute vec3 aNormal;
+in vec3 aPosition;
+in vec2 aTexCoord;
+in vec3 aNormal;
 
 out vec2 vTexCoord;
 out vec3 vNormal;

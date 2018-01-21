@@ -2,6 +2,7 @@ package blue.sparse.engine.render.resource.shader
 
 import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.errors.ResourceException
+import blue.sparse.engine.errors.glCall
 import blue.sparse.engine.render.resource.Bindable
 import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.render.resource.shader.uniform.Uniforms
@@ -26,16 +27,16 @@ class ShaderProgram(shaders: Collection<Shader>) : Resource(), Bindable
 
 	init
 	{
-		id = glCreateProgram()
+		id = glCall { glCreateProgram() }
 		shaders.forEach {
-			glAttachShader(id, it.id)
+			glCall { glAttachShader(id, it.id) }
 		}
 
-		glLinkProgram(id)
+		glCall { glLinkProgram(id) }
 		if (glGetProgrami(id, GL_LINK_STATUS) == 0)
 			throw ResourceException("Shader program linking error: \n${glGetProgramInfoLog(id)}")
 
-		glValidateProgram(id)
+		glCall { glValidateProgram(id) }
 		if (glGetProgrami(id, GL_VALIDATE_STATUS) == 0)
 			throw ResourceException("Shader program validation error: \n${glGetProgramInfoLog(id)}")
 
@@ -44,16 +45,16 @@ class ShaderProgram(shaders: Collection<Shader>) : Resource(), Bindable
 
 	override fun bind()
 	{
-		glUseProgram(id)
+		glCall { glUseProgram(id) }
 	}
 
 	override fun unbind()
 	{
-		glUseProgram(0)
+		glCall { glUseProgram(0) }
 	}
 
 	override fun release()
 	{
-		glDeleteProgram(id)
+		glCall { glDeleteProgram(id) }
 	}
 }

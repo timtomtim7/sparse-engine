@@ -1,9 +1,11 @@
 package blue.sparse.engine
 
+import blue.sparse.engine.errors.glCall
 import blue.sparse.engine.errors.printOpenGLErrors
 import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.util.MemoryUsage
 import blue.sparse.engine.window.Window
+import blue.sparse.logger.Logger
 import blue.sparse.math.util.DeltaTimer
 import blue.sparse.math.util.FrequencyTimer
 import org.lwjgl.opengl.GL
@@ -34,13 +36,13 @@ object SparseEngine
 	private fun initGL()
 	{
 		GL.createCapabilities()
-		glEnable(GL_MULTISAMPLE)
-		glEnable(GL_CULL_FACE)
-		glFrontFace(GL_CW)
-		glCullFace(GL_BACK)
-		glEnable(GL_TEXTURE_2D)
-		glEnable(GL_DEPTH_TEST)
-		glEnable(GL_DEPTH_CLAMP)
+		glCall { glEnable(GL_MULTISAMPLE) }
+		glCall { glEnable(GL_CULL_FACE) }
+		glCall { glFrontFace(GL_CW) }
+		glCall { glCullFace(GL_BACK) }
+//		glCall { glEnable(GL_TEXTURE_2D) }
+		glCall { glEnable(GL_DEPTH_TEST) }
+		glCall { glEnable(GL_DEPTH_CLAMP) }
 	}
 
 	fun start(window: Window, gameClass: KClass<out SparseGame>, targetFrameRate: Double = 0.0)
@@ -81,7 +83,7 @@ object SparseEngine
 				{
 					val ms = 1000.0 / frameRate
 
-					println(String.format("FPS: %8.3f | MS: %5.2f | RAM: %s", frameRate, ms, MemoryUsage.getMemoryUsedString()))
+					Logger.debug(String.format("FPS: %8.3f | MS: %5.2f | RAM: %s", frameRate, ms, MemoryUsage.getMemoryUsedString()))
 					frameCounter -= frameRate
 				}
 

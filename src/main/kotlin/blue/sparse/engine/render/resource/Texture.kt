@@ -1,6 +1,7 @@
 package blue.sparse.engine.render.resource
 
 import blue.sparse.engine.asset.Asset
+import blue.sparse.engine.errors.glCall
 import blue.sparse.engine.util.ColorFormat
 import blue.sparse.extensions.toByteBuffer
 import blue.sparse.math.vectors.ints.Vector2i
@@ -16,22 +17,22 @@ class Texture(asset: Asset) : Resource(), Bindable
 
 	init
 	{
-		id = glGenTextures()
+		id = glCall { glGenTextures() }
 
 		val image = asset.readImage()
 		size = Vector2i(image.width, image.height)
 		bind {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.toByteBuffer(ColorFormat.RGBA))
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+			glCall { glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.toByteBuffer(ColorFormat.RGBA)) }
+			glCall { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT) }
+			glCall { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT) }
+			glCall { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) }
+			glCall { glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) }
 		}
 	}
 
 	fun bind(id: Int)
 	{
-		glActiveTexture(GL_TEXTURE0 + id)
+		glCall { glActiveTexture(GL_TEXTURE0 + id) }
 		bind()
 	}
 
@@ -45,23 +46,23 @@ class Texture(asset: Asset) : Resource(), Bindable
 
 	override fun bind()
 	{
-		glBindTexture(GL_TEXTURE_2D, id)
+		glCall { glBindTexture(GL_TEXTURE_2D, id) }
 	}
 
 	fun unbind(id: Int)
 	{
-		glActiveTexture(GL_TEXTURE0 + id)
+		glCall { glActiveTexture(GL_TEXTURE0 + id) }
 		unbind()
-		glActiveTexture(GL_TEXTURE0)
+		glCall { glActiveTexture(GL_TEXTURE0) }
 	}
 
 	override fun unbind()
 	{
-		glBindTexture(GL_TEXTURE_2D, 0)
+		glCall { glBindTexture(GL_TEXTURE_2D, 0) }
 	}
 
 	override fun release()
 	{
-		glDeleteTextures(id)
+		glCall { glDeleteTextures(id) }
 	}
 }

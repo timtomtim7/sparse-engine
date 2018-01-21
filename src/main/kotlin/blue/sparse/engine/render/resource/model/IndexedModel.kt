@@ -1,5 +1,6 @@
 package blue.sparse.engine.render.resource.model
 
+import blue.sparse.engine.errors.glCall
 import blue.sparse.engine.render.resource.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL15.*
@@ -13,37 +14,37 @@ class IndexedModel(val array: VertexArray, indices: IntArray) : Model, Resource(
 
 	init
 	{
-		id = glGenBuffers()
+		id = glCall { glGenBuffers() }
 
 		val buffer = ByteBuffer.allocateDirect(indices.size * 4).order(ByteOrder.nativeOrder())
 		indices.forEach { buffer.putInt(it) }
 		buffer.flip()
 
 		bind()
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
+		glCall { glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW) }
 		unbind()
 //		bind { glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW) }
 	}
 
 	override fun bind()
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id)
+		glCall { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id) }
 	}
 
 	override fun unbind()
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+		glCall { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) }
 	}
 
 	override fun render()
 	{
 		bind(array, this) {
-			glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0)
+			glCall { glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0) }
 		}
 	}
 
 	override fun release()
 	{
-		glDeleteBuffers(id)
+		glCall { glDeleteBuffers(id) }
 	}
 }

@@ -1,14 +1,19 @@
 import blue.sparse.engine.SparseGame
 import blue.sparse.engine.asset.Asset
+import blue.sparse.engine.asset.model.PolygonModelLoader
 import blue.sparse.engine.asset.model.WavefrontModelLoader
 import blue.sparse.engine.render.camera.Camera
-import blue.sparse.engine.render.camera.FirstPerson
+import blue.sparse.engine.render.camera.PanOrbit
 import blue.sparse.engine.render.resource.Texture
 import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.engine.render.scene.Scene
 import blue.sparse.engine.render.scene.component.ModelComponent
-import blue.sparse.math.PI
-import blue.sparse.math.vectors.floats.*
+import blue.sparse.engine.render.scene.component.VelocityComponent
+import blue.sparse.engine.window.input.Key
+import blue.sparse.extensions.nextQuaternion4f
+import blue.sparse.extensions.nextVector3f
+import blue.sparse.math.vectors.floats.Vector3f
+import blue.sparse.math.vectors.floats.normalize
 import java.util.concurrent.ThreadLocalRandom
 
 class TestGame : SparseGame()
@@ -21,40 +26,43 @@ class TestGame : SparseGame()
 	private val camera = Camera.perspective(100f, window.aspectRatio, 0.1f, 1000f).apply {
 		moveTo(normalize(Vector3f(1f, 1f, 1f)) * 10f)
 		lookAt(Vector3f(0f))
-		controller = FirstPerson(this)
+		controller = PanOrbit(this)
 	}
+
+	private val models = listOf("cube", "cylinder", "ico_sphere", "torus").map { WavefrontModelLoader.load(Asset["models/$it.obj"]) }
+	private val random get() = ThreadLocalRandom.current()
 
 	init
 	{
-		val pRange = 32f
-		val pRange2 = pRange / 2f
+		PolygonModelLoader.load(Asset["models/cube.ply"])
 
-		val sRange = 2f
-		val sRangeMin = 1f
-//		val sRange2 = sRange / 2f
+//		for(i in 0..64)
+//		{
+//			addElement()
+//		}
+	}
 
-		val models = listOf("cube", "cylinder", "ico_sphere", "torus").map { WavefrontModelLoader.load(Asset["models/$it.obj"]) }
-		val random = ThreadLocalRandom.current()
-		for(i in 0..128)
-		{
-			val model = models[random.nextInt(models.size)]
-			val component = ModelComponent(model, arrayOf(texture))
+	private fun addElement()
+	{
+		val model = models[random.nextInt(models.size)]
+		val component = ModelComponent(model, arrayOf(texture))
 
-			val translation = Vector3f(random.nextFloat() * pRange - pRange2, random.nextFloat() * pRange - pRange2, random.nextFloat() * pRange - pRange2)
-			val rotationAxis = normalize(Vector3f(random.nextFloat() * 2 - 1, random.nextFloat() * 2 - 1, random.nextFloat() * 2 - 1))
-			val rotationAngle = random.nextFloat() * PI.toFloat() * 2
-			val scale = Vector3f(random.nextFloat() * sRange + sRangeMin, random.nextFloat() * sRange + sRangeMin, random.nextFloat() * sRange + sRangeMin)
+		val translation = random.nextVector3f(-16f, 16f)
+		val rotation = random.nextQuaternion4f()
+		val scale = random.nextVector3f(1f, 2f)
 
-			component.transform.setTranslation(translation)
-			component.transform.setRotation(Quaternion4f(rotationAxis, rotationAngle))
-			component.transform.setScale(scale)
+//			component.transform.setTranslation(translation)
+		component.transform.setRotation(rotation)
+		component.transform.setScale(scale)
 
-			scene.add(component)
-		}
+		scene.add(VelocityComponent(component, random.nextVector3f(-20f, 20f)))
 	}
 
 	override fun update(delta: Float)
 	{
+		if(input[Key.E].held)
+			addElement()
+
 		camera.update(delta)
 		scene.update(delta)
 	}

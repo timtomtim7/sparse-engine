@@ -69,6 +69,7 @@ class Input internal constructor(val window: Window)
 			it.update()
 			it.inactive
 		}
+
 		mouseMoved = false
 		scrollDelta = 0f
 	}
@@ -114,6 +115,11 @@ class Input internal constructor(val window: Window)
 		{
 			pressed = false
 			released = false
+		}
+
+		override fun toString(): String
+		{
+			return "ButtonState(button=$button, pressed=$pressed, held=$held, released=$released, inactive=$inactive)"
 		}
 	}
 }
