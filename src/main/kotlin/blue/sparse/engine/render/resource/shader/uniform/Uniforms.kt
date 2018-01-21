@@ -14,7 +14,7 @@ class Uniforms internal constructor(val program: ShaderProgram)
 		return uniforms.getOrPut(name) {
 			val result = glGetUniformLocation(program.id, name)
 			if(result == -1)
-				throw IllegalArgumentException("Uniform not found $name")
+				throw IllegalArgumentException("Uniform not found: \"$name\"")
 			result
 		}
 	}

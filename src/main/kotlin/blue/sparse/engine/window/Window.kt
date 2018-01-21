@@ -37,6 +37,9 @@ class Window(initial: Initial)
 		get() = intArrayOf(0).apply { glfwGetWindowSize(id, null as IntArray?, this) }[0]
 		set(value) = glfwSetWindowSize(id, width, value)
 
+	val aspectRatio: Float
+		get() = width.toFloat() / height.toFloat()
+
 	var vSync: Boolean = true
 		set(value)
 		{

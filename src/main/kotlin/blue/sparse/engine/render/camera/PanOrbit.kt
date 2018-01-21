@@ -15,6 +15,8 @@ class PanOrbit(
 	private var leftStart: Vector2f = Vector2f(0f)
 	private var rightStart: Vector2f = Vector2f(0f)
 
+	private var zoomVelocity: Float = 0f
+
 	override fun update(delta: Float)
 	{
 		val window = SparseEngine.window
@@ -22,6 +24,14 @@ class PanOrbit(
 
 		pan(input)
 		orbit(input)
+
+		val scroll = input.scrollDelta
+		if(scroll != 0f)
+			zoomVelocity += scroll
+
+		val movement = -(zoomVelocity * delta * 10)
+		zoomVelocity += movement
+		camera.move(camera.transform.rotation.forward, movement)
 	}
 
 	private fun pan(input: Input)

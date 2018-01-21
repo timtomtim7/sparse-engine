@@ -2,6 +2,7 @@ package blue.sparse.engine
 
 import blue.sparse.engine.errors.printOpenGLErrors
 import blue.sparse.engine.render.resource.Resource
+import blue.sparse.engine.util.MemoryUsage
 import blue.sparse.engine.window.Window
 import blue.sparse.math.util.DeltaTimer
 import blue.sparse.math.util.FrequencyTimer
@@ -80,7 +81,7 @@ object SparseEngine
 				{
 					val ms = 1000.0 / frameRate
 
-					println(String.format("FPS: %8.3f | MS: %5.2f", frameRate, ms))
+					println(String.format("FPS: %8.3f | MS: %5.2f | RAM: %s", frameRate, ms, MemoryUsage.getMemoryUsedString()))
 					frameCounter -= frameRate
 				}
 
