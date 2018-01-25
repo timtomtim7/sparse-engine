@@ -23,6 +23,8 @@ object WavefrontModelLoader: ModelLoader
 
 		val tripleIndices = ArrayList<Triple<Int, Int?, Int?>>()
 
+		fun List<String>.toOptionalIndex(index: Int) = getOrNull(index)?.toIntOrNull()?.let { it - 1 }
+
 		for (line in lines)
 		{
 			when(line.first())
@@ -31,15 +33,30 @@ object WavefrontModelLoader: ModelLoader
 				"vt" -> texCoords.add(Vector2f(line[1].toFloat(), line[2].toFloat()))
 				"vn" -> normals.add(Vector3f(line[1].toFloat(), line[2].toFloat(), line[3].toFloat()))
 				"f" -> {
+					val faceIndices = ArrayList<Triple<Int, Int?, Int?>>()
+
 					for(i in 1 until line.size)
 					{
 						val faceIndex = line[i].split("/")
 
-						tripleIndices.add(Triple(
+						faceIndices.add(Triple(
 								faceIndex[0].toInt() - 1,
-								faceIndex.getOrNull(1)?.toIntOrNull()?.let { it - 1 },
-								faceIndex.getOrNull(2)?.toIntOrNull()?.let { it - 1 }
+								faceIndex.toOptionalIndex(1),
+								faceIndex.toOptionalIndex(2)
 						))
+					}
+
+					if(faceIndices.size == 4)
+					{
+						tripleIndices.add(faceIndices[0])
+						tripleIndices.add(faceIndices[1])
+						tripleIndices.add(faceIndices[2])
+
+						tripleIndices.add(faceIndices[0])
+						tripleIndices.add(faceIndices[2])
+						tripleIndices.add(faceIndices[3])
+					}else{
+						tripleIndices.addAll(faceIndices)
 					}
 				}
 			}

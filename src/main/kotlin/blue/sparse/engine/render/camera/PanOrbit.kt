@@ -36,10 +36,10 @@ class PanOrbit(
 
 	private fun pan(input: Input)
 	{
-		val left = input[MouseButton.LEFT]
-		if (left.pressed) leftStart = input.mousePosition
+		val panButton = input[MouseButton.MIDDLE]
+		if (panButton.pressed) leftStart = input.mousePosition
 
-		if (left.held)
+		if (panButton.held)
 		{
 			val mousePosition = input.mousePosition
 			val transform = camera.transform
@@ -58,11 +58,11 @@ class PanOrbit(
 
 	private fun orbit(input: Input)
 	{
-		val right = input[MouseButton.RIGHT]
-		if(right.pressed)
+		val orbitButton = input[MouseButton.RIGHT]
+		if(orbitButton.pressed)
 			rightStart = input.mousePosition
 
-		if(right.held)
+		if(orbitButton.held)
 		{
 			val mousePosition = input.mousePosition
 

@@ -43,7 +43,7 @@ class Scene
 	fun render(delta: Float, camera: Camera, shader: ShaderProgram)
 	{
 		shader.bind {
-			shader.uniforms["viewProj"] = camera.viewProjectionMatrix
+			shader.uniforms["uViewProj"] = camera.viewProjectionMatrix
 			components.forEach { it.render(delta, camera, shader) }
 		}
 	}

@@ -9,7 +9,7 @@ class ModelComponent(val model: Model, val textures: Array<Texture>) : Transform
 {
 	override fun render(delta: Float, camera: Camera, shader: ShaderProgram)
 	{
-		shader.uniforms["model"] = modelMatrix
+		shader.uniforms["uModel"] = modelMatrix
 
 		for ((index, texture) in textures.withIndex())
 			texture.bind(index)

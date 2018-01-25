@@ -17,6 +17,7 @@ private fun accumulateErrors(initial: Int): String
 	{
 		string.append(", ")
 		string.append(error)
+		string.append(" (0x${error.toString(16)})")
 
 		error = glGetError()
 	}
@@ -28,8 +29,7 @@ private fun accumulateErrors(initial: Int): String
 fun getOpenGLErrors(): String?
 {
 	val error = glGetError()
-	if(error != GL_NO_ERROR)
-		return accumulateErrors(error)
+	if(error != GL_NO_ERROR) return accumulateErrors(error)
 	return null
 }
 

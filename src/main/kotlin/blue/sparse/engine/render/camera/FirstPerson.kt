@@ -14,22 +14,14 @@ class FirstPerson(camera: Camera, val mouseSensitivity: Float = 0.17f, val movem
 		val window = SparseEngine.window
 		val input = window.input
 
-//		println(window.cursorMode)
-//		println(input[Key.ESCAPE].pressed)
-//		println(input[MouseButton.LEFT].pressed)
-
 		if (window.cursorMode == Window.CursorMode.NORMAL && (input[Key.ESCAPE].pressed || input[MouseButton.LEFT].pressed))
 		{
-			println("FirstPerson focused")
 			window.cursorMode = Window.CursorMode.DISABLED
 			lastMousePos = input.mousePosition
 		}
 
 		if (window.cursorMode == Window.CursorMode.DISABLED && (input[Key.ESCAPE].pressed))
-		{
-			println("FirstPerson unfocused")
 			window.cursorMode = Window.CursorMode.NORMAL
-		}
 
 		if (window.cursorMode != Window.CursorMode.DISABLED) return
 
@@ -59,16 +51,14 @@ class FirstPerson(camera: Camera, val mouseSensitivity: Float = 0.17f, val movem
 
 	private fun freeLook(input: Input)
 	{
-//		if(!input.mouseMoved) return
-
 		val mousePos = input.mousePosition
 		val mouseDiff = mousePos - lastMousePos
 		lastMousePos = mousePos
 
 		val diff = (mouseDiff * mouseSensitivity) * 0.015f
-//		println(diff)
 
-		if(diff.x != 0f) camera.transform.rotateRad(Axis.Y.vector3, diff.x)
+//		if(diff.x != 0f) camera.transform.rotateRad(Axis.Y.vector3, diff.x)
+		if(diff.x != 0f) camera.transform.rotateRad(camera.transform.rotation.up, diff.x)
 		if(diff.y != 0f) camera.transform.rotateRad(camera.transform.rotation.left, diff.y)
 	}
 }

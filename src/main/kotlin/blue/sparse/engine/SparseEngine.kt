@@ -2,6 +2,7 @@ package blue.sparse.engine
 
 import blue.sparse.engine.errors.glCall
 import blue.sparse.engine.errors.printOpenGLErrors
+import blue.sparse.engine.render.Logo
 import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.util.MemoryUsage
 import blue.sparse.engine.window.Window
@@ -15,6 +16,7 @@ import org.lwjgl.opengl.GL13.GL_MULTISAMPLE
 import org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
+import kotlin.system.measureTimeMillis
 
 object SparseEngine
 {
@@ -40,9 +42,30 @@ object SparseEngine
 		glCall { glEnable(GL_CULL_FACE) }
 		glCall { glFrontFace(GL_CW) }
 		glCall { glCullFace(GL_BACK) }
-//		glCall { glEnable(GL_TEXTURE_2D) }
 		glCall { glEnable(GL_DEPTH_TEST) }
 		glCall { glEnable(GL_DEPTH_CLAMP) }
+
+		glCall { glEnable(GL_BLEND) }
+		glCall { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) }
+
+		glClearColor(1f, 1f, 1f, 1f)
+		clear()
+
+		Logo().apply {
+			render()
+			delete()
+		}
+
+		window.swapBuffers()
+
+		glCall { glDisable(GL_BLEND) }
+
+		glClearColor(0f, 0f, 0f, 0f)
+	}
+
+	fun clear()
+	{
+		glCall { glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT or GL11.GL_STENCIL_BUFFER_BIT) }
 	}
 
 	fun start(window: Window, gameClass: KClass<out SparseGame>, targetFrameRate: Double = 0.0)
@@ -55,7 +78,11 @@ object SparseEngine
 
 		initGL()
 
-		game = gameClass.primaryConstructor!!.call()
+		val initTime = measureTimeMillis {
+			game = gameClass.primaryConstructor!!.call()
+		}
+
+		Logger.info("Game initialization took ${initTime}ms")
 
 		var frameCounter = 0.0
 		val frameTimer = FrequencyTimer(1.0 / targetFrameRate)
@@ -67,7 +94,7 @@ object SparseEngine
 		{
 			if (window.vSync || targetFrameRate == 0.0 || frameTimer.use())
 			{
-				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT or GL11.GL_STENCIL_BUFFER_BIT)
+				clear()
 
 				val delta = deltaTimer.deltaFloat()
 				game.update(delta)

@@ -8,14 +8,14 @@ import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.render.resource.shader.uniform.Uniforms
 import org.lwjgl.opengl.GL20.*
 
-class ShaderProgram(shaders: Collection<Shader>) : Resource(), Bindable
+class ShaderProgram(shaders: Collection<Shader>, deleteShaders: Boolean) : Resource(), Bindable
 {
 	internal val id: Int
 	val uniforms: Uniforms
 
-	constructor(vararg shaders: Shader): this(shaders.toSet())
+	constructor(vararg shaders: Shader, deleteShaders: Boolean = false): this(shaders.toSet(), deleteShaders)
 
-	constructor(vararg shadersAssets: Pair<Asset, Shader.Type>): this(shadersAssets.map { Shader(it.first, it.second) })
+	constructor(vararg shadersAssets: Pair<Asset, Shader.Type>): this(shadersAssets.map { Shader(it.first, it.second) }, true)
 
 	constructor(fragment: Asset? = null, vertex: Asset? = null, geometry: Asset? = null): this(
 			*listOfNotNull(
@@ -39,6 +39,12 @@ class ShaderProgram(shaders: Collection<Shader>) : Resource(), Bindable
 		glCall { glValidateProgram(id) }
 		if (glGetProgrami(id, GL_VALIDATE_STATUS) == 0)
 			throw ResourceException("Shader program validation error: \n${glGetProgramInfoLog(id)}")
+
+		shaders.forEach {
+			glCall { glDetachShader(id, it.id) }
+			if(deleteShaders)
+				it.delete()
+		}
 
 		uniforms = Uniforms(this)
 	}
