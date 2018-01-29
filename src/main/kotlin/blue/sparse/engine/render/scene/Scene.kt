@@ -44,7 +44,10 @@ class Scene
 	{
 		shader.bind {
 			shader.uniforms["uViewProj"] = camera.viewProjectionMatrix
-			components.forEach { it.render(delta, camera, shader) }
+			components.forEach {
+				it.render(delta, camera, shader)
+				if(it.overridesShader) shader.bind()
+			}
 		}
 	}
 

@@ -18,7 +18,7 @@ class Logo
 	private val layout = VertexLayout()
 	private val buffer = VertexBuffer()
 	private val model = IndexedModel(array, intArrayOf(0, 1, 2, 0, 2, 3))
-	private val texture = Texture(Asset["sparse_logo.png"])
+	private val texture = Texture(Asset["sparse_logo_${if(SparseEngine.window.width > 2000) 2048 else 512}.png"])
 
 	private val shader = ShaderProgram(Asset["shaders/logo.fs"], Asset["shaders/logo.vs"])
 

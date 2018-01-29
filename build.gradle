@@ -18,7 +18,7 @@ switch ( OperatingSystem.current() ) {
 project.ext.lwjglVersion = "3.1.3"
 
 buildscript {
-    ext.kotlin_version = '1.2.20'
+    ext.kotlin_version = '1.2.21'
 
     repositories {
         mavenCentral()
@@ -58,4 +58,27 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+    with jar
+}
+
+task fatTestJar(type: Jar) {
+    from { configurations.testRuntime.collect { it.isDirectory() ? it : zipTree(it) } }
+    with testJar
+}
+
+task copyDependencies(type: Sync) {
+    into "build/libs/libs"
+    from {
+        configurations.testRuntime.collect {
+            println(it.name)
+        	if(!it.isDirectory() && it.name.contains("natives"))
+				zipTree(it).filter { !it.name.endsWith(".git") && !it.name.endsWith(".sha1") }
+			else it
+		}
+    }
 }

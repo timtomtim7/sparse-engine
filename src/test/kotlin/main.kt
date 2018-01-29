@@ -5,10 +5,13 @@ fun main(args: Array<String>)
 {
 //	PolygonModelLoader.load(Asset["models/uv_sphere.ply"])
 
-	val window = Window(1280, 720) {
+	val window = Window(
+			args.getOrNull(0)?.toIntOrNull() ?: 1600,
+			args.getOrNull(1)?.toIntOrNull() ?: 900
+	) {
 		resizable()
 		icon("sparse_icon_64.png")
-		vSync(false)
+		vSync(true)
 	}
 
 	SparseEngine.start(window, TestGame2::class, 100.0)

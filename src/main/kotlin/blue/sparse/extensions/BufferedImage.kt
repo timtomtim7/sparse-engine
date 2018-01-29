@@ -12,6 +12,7 @@ fun BufferedImage.toByteBuffer(format: ColorFormat = ColorFormat.RGBA): ByteBuff
 	val buffer = ByteBuffer.allocateDirect(height * width * format.order.size).order(ByteOrder.nativeOrder())
 	val hasAlpha = colorModel.hasAlpha()
 
+//	for (y in height-1 downTo 0)
 	for (y in 0 until height)
 	{
 		for (x in 0 until width)

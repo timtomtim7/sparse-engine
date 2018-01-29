@@ -80,6 +80,7 @@ object SparseEngine
 
 		val initTime = measureTimeMillis {
 			game = gameClass.primaryConstructor!!.call()
+			System.gc()
 		}
 
 		Logger.info("Game initialization took ${initTime}ms")
@@ -94,7 +95,8 @@ object SparseEngine
 		{
 			if (window.vSync || targetFrameRate == 0.0 || frameTimer.use())
 			{
-				clear()
+//				clear()
+				glCall { glClear(GL11.GL_DEPTH_BUFFER_BIT or GL11.GL_STENCIL_BUFFER_BIT) }
 
 				val delta = deltaTimer.deltaFloat()
 				game.update(delta)

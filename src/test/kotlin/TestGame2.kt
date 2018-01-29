@@ -6,6 +6,7 @@ import blue.sparse.engine.render.camera.FirstPerson
 import blue.sparse.engine.render.resource.Texture
 import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.engine.render.scene.component.ModelComponent
+import blue.sparse.engine.render.scene.component.Skybox
 import blue.sparse.engine.window.input.Key
 import blue.sparse.math.vectors.floats.Vector3f
 import blue.sparse.math.vectors.floats.normalize
@@ -18,12 +19,14 @@ class TestGame2 : SparseGame()
 
 	init
 	{
+		scene.add(Skybox(Asset["textures/skybox.png"]))
+
 		camera.apply {
 			moveTo(normalize(Vector3f(1f, 1f, 1f)) * 10f)
 			lookAt(Vector3f(0f))
 			controller = FirstPerson(this)
 		}
-		scene.add(ModelComponent(WavefrontModelLoader.load(Asset["models/test_scene_bigger.obj"]), arrayOf(texture)))
+		scene.add(ModelComponent(WavefrontModelLoader.load(Asset["models/noclue_ship.obj"]), arrayOf(texture)))
 	}
 
 	override fun update(delta: Float)

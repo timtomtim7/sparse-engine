@@ -11,5 +11,5 @@ void main()
 {
 	float brightness = dot(vNormal, normalize(vec3(1,1,1))) * 0.5 + 0.5;
 
-	fColor = texture2D(uTexture, vTexCoord) * brightness;
+	fColor = texture2D(uTexture, vTexCoord/* * vec2(1, -1)*/) * brightness;
 }
