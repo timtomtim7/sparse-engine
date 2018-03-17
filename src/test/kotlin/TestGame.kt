@@ -13,17 +13,18 @@ import blue.sparse.math.vectors.floats.Vector3f
 import blue.sparse.math.vectors.floats.normalize
 import java.util.concurrent.ThreadLocalRandom
 
-class TestGame : SparseGame()
-{
+class TestGame : SparseGame() {
 	private val shader: ShaderProgram = ShaderProgram(Asset["shaders/fragment.fs"], Asset["shaders/vertex.vs"])
 	private val texture: Texture = Texture(Asset["textures/developer/diffuse.png"])
 
-//	private val models = listOf("cube", "cylinder", "ico_sphere", "torus").map { WavefrontModelLoader.load(Asset["models/$it.obj"]) }
+	//	private val models = listOf("cube", "cylinder", "ico_sphere", "torus").map { WavefrontModelLoader.load(Asset["models/$it.obj"]) }
 	private val models = listOf("curved_edge_cube").map { WavefrontModelLoader.load(Asset["models/$it.obj"]) }
 	private val random get() = ThreadLocalRandom.current()
 
-	init
-	{
+	init {
+//		val asset = Asset["sparse_icon_64.png"]
+//		texture.subImage(asset, Vector2i(128, 128))
+
 		camera.apply {
 			moveTo(normalize(Vector3f(1f, 1f, 1f)) * 10f)
 			lookAt(Vector3f(0f))
@@ -31,8 +32,7 @@ class TestGame : SparseGame()
 		}
 	}
 
-	private fun addElement()
-	{
+	private fun addElement() {
 		val model = models[random.nextInt(models.size)]
 		val component = ModelComponent(model, arrayOf(texture))
 
@@ -47,17 +47,16 @@ class TestGame : SparseGame()
 		scene.add(VelocityComponent(component, random.nextVector3f(-20f, 20f)))
 	}
 
-	override fun update(delta: Float)
-	{
-		if(input[Key.E].held)
+	override fun update(delta: Float) {
+		engine.clear()
+		if (input[Key.E].held)
 			addElement()
 
 		camera.update(delta)
 		scene.update(delta)
 	}
 
-	override fun render(delta: Float)
-	{
+	override fun render(delta: Float) {
 		scene.render(delta, camera, shader)
 	}
 }

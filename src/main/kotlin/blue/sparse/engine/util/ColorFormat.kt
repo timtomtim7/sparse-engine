@@ -11,6 +11,8 @@ class ColorFormat(vararg order: Int)
 	val order: IntArray = order
 		get() = field.clone()
 
+	val hasAlpha: Boolean = 3 in order
+
 	override fun equals(other: Any?): Boolean
 	{
 		if (this === other) return true

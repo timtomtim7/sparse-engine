@@ -5,7 +5,7 @@ import blue.sparse.engine.window.Window
 import blue.sparse.engine.window.input.*
 import blue.sparse.math.vectors.floats.*
 
-class FirstPerson(camera: Camera, val mouseSensitivity: Float = 0.17f, val movementSpeed: Float = 6f): CameraController(camera)
+class FirstPerson(camera: Camera, val mouseSensitivity: Float = 0.17f, val movementSpeed: Float = 6f) : CameraController(camera)
 {
 	private var lastMousePos = Vector2f(0f)
 
@@ -40,11 +40,14 @@ class FirstPerson(camera: Camera, val mouseSensitivity: Float = 0.17f, val movem
 		if(input[Key.SPACE].held) 		movement += Vector3f( 0f,  1f,  0f)
 		if(input[Key.LEFT_SHIFT].held) 	movement += Vector3f( 0f, -1f,  0f)
 
-		if(movement.all { it == 0f })
+		if (movement.all { it == 0f })
 			return
 
 		val rotated = normalize(movement) * camera.transform.rotation
-		val speed = movementSpeed * delta
+		var speed = movementSpeed * delta
+
+		if(input[Key.TAB].held) speed *= 2
+		if(input[Key.Q].held) speed *= 8
 
 		camera.transform.translate(rotated * speed)
 	}
@@ -57,8 +60,8 @@ class FirstPerson(camera: Camera, val mouseSensitivity: Float = 0.17f, val movem
 
 		val diff = (mouseDiff * mouseSensitivity) * 0.015f
 
-//		if(diff.x != 0f) camera.transform.rotateRad(Axis.Y.vector3, diff.x)
-		if(diff.x != 0f) camera.transform.rotateRad(camera.transform.rotation.up, diff.x)
-		if(diff.y != 0f) camera.transform.rotateRad(camera.transform.rotation.left, diff.y)
+		if(diff.x != 0f) camera.transform.rotateRad(Axis.Y.vector3, diff.x)
+//		if (diff.x != 0f) camera.transform.rotateRad(camera.transform.rotation.up, diff.x)
+		if (diff.y != 0f) camera.transform.rotateRad(camera.transform.rotation.left, diff.y)
 	}
 }

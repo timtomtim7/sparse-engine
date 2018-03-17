@@ -11,6 +11,8 @@ abstract class SparseGame(var camera: Camera = Camera.perspective(100f, SparseEn
 
 	var scene = Scene()
 
+	open fun postInit() {}
+
 	open fun update(delta: Float)
 	{
 		camera.update(delta)

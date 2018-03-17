@@ -40,6 +40,9 @@ class Window(initial: Initial)
 	val aspectRatio: Float
 		get() = width.toFloat() / height.toFloat()
 
+	var resized: Boolean = true
+		private set
+
 	var vSync: Boolean = true
 		set(value)
 		{
@@ -89,7 +92,7 @@ class Window(initial: Initial)
 		glfwWindowHint(GLFW_DECORATED, if (initial.mode.decorated) GLFW_TRUE else GLFW_FALSE)
 		glfwWindowHint(GLFW_RESIZABLE, if (initial.resizable) GLFW_TRUE else GLFW_FALSE)
 		glfwWindowHint(GLFW_MAXIMIZED, if (initial.maximized) GLFW_TRUE else GLFW_FALSE)
-		glfwWindowHint(GLFW_SAMPLES, 4)
+//		glfwWindowHint(GLFW_SAMPLES, 4)
 
 		val primaryMonitor = glfwGetPrimaryMonitor()
 
@@ -128,7 +131,10 @@ class Window(initial: Initial)
 		if (initial.preserveAspectRatio)
 			glfwSetWindowAspectRatio(id, width, height)
 
-		glfwSetWindowRefreshCallback(id) { glViewport(0, 0, this.width, this.height) }
+		glfwSetWindowRefreshCallback(id) {
+			resized = true
+			glViewport(0, 0, this.width, this.height)
+		}
 
 		glfwShowWindow(id)
 		vSync = initial.vSync
@@ -172,6 +178,7 @@ class Window(initial: Initial)
 
 	fun pollEvents()
 	{
+		resized = false
 		glfwPollEvents()
 	}
 

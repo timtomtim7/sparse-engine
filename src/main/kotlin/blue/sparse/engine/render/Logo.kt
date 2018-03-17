@@ -9,8 +9,7 @@ import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.math.matrices.Matrix4f
 import blue.sparse.math.vectors.floats.Vector2f
 
-class Logo
-{
+class Logo {
 	private val aspectRatio = SparseEngine.window.aspectRatio
 	private val viewProj = Matrix4f.orthographic(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
 
@@ -18,33 +17,30 @@ class Logo
 	private val layout = VertexLayout()
 	private val buffer = VertexBuffer()
 	private val model = IndexedModel(array, intArrayOf(0, 1, 2, 0, 2, 3))
-	private val texture = Texture(Asset["sparse_logo_${if(SparseEngine.window.width > 2000) 2048 else 512}.png"])
+	private val texture = Texture(Asset["sparse_logo_${if (SparseEngine.window.width > 2000) 2048 else 512}.png"])
 
 	private val shader = ShaderProgram(Asset["shaders/logo.fs"], Asset["shaders/logo.vs"])
 
-	init
-	{
+	init {
 		layout.add<Vector2f>()
 		layout.add<Vector2f>()
 
 		buffer.add(Vector2f(-1f, -1f) / 1.2f, Vector2f(0f, 1f))
-		buffer.add(Vector2f(-1f,  1f) / 1.2f, Vector2f(0f, 0f))
-		buffer.add(Vector2f( 1f,  1f) / 1.2f, Vector2f(1f, 0f))
-		buffer.add(Vector2f( 1f, -1f) / 1.2f, Vector2f(1f, 1f))
+		buffer.add(Vector2f(-1f, 1f) / 1.2f, Vector2f(0f, 0f))
+		buffer.add(Vector2f(1f, 1f) / 1.2f, Vector2f(1f, 0f))
+		buffer.add(Vector2f(1f, -1f) / 1.2f, Vector2f(1f, 1f))
 
 		array.add(buffer, layout)
 	}
 
-	fun render()
-	{
+	fun render() {
 		bind(shader, texture) {
 			shader.uniforms["uViewProj"] = viewProj
 			model.render()
 		}
 	}
 
-	fun delete()
-	{
+	fun delete() {
 		shader.delete()
 		texture.delete()
 		model.delete()

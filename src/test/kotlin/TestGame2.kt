@@ -6,7 +6,7 @@ import blue.sparse.engine.render.camera.FirstPerson
 import blue.sparse.engine.render.resource.Texture
 import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.engine.render.scene.component.ModelComponent
-import blue.sparse.engine.render.scene.component.Skybox
+import blue.sparse.engine.render.scene.component.ShaderSkybox
 import blue.sparse.engine.window.input.Key
 import blue.sparse.math.vectors.floats.Vector3f
 import blue.sparse.math.vectors.floats.normalize
@@ -19,7 +19,8 @@ class TestGame2 : SparseGame()
 
 	init
 	{
-		scene.add(Skybox(Asset["textures/skybox.png"]))
+//		scene.add(Skybox(Asset["textures/skybox.png"]))
+		scene.add(ShaderSkybox(Asset["shaders/testsky.fs"]))
 
 		camera.apply {
 			moveTo(normalize(Vector3f(1f, 1f, 1f)) * 10f)

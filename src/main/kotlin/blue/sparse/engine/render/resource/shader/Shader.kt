@@ -8,7 +8,7 @@ import blue.sparse.logger.Logger
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER
 
-class Shader(sourceAsset: Asset, type: Type) : Resource()
+class Shader(sourceAsset: Asset, val type: Type) : Resource()
 {
 	internal val id: Int
 

@@ -4,7 +4,7 @@ import blue.sparse.engine.asset.Asset
 import java.io.*
 import java.util.zip.ZipFile
 
-class AssetArchive(val archive: File) : AssetProvider
+class AssetArchive(val archive: File, val prefix: String = "") : AssetProvider
 {
 	private val zip: ZipFile
 
@@ -23,8 +23,8 @@ class AssetArchive(val archive: File) : AssetProvider
 
 	override fun get(path: String): Asset?
 	{
-		if(zip.getEntry(path) == null) return null
-		return ZipAsset(path)
+		if(zip.getEntry(prefix+path) == null) return null
+		return ZipAsset(prefix+path)
 	}
 
 	inner class ZipAsset internal constructor(override val path: String) : Asset

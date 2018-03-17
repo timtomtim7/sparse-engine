@@ -7,3 +7,7 @@ typealias vec4 = Vector4f
 typealias vec3 = Vector4f
 typealias vec2 = Vector4f
 typealias mat4 = Matrix4f
+
+typealias uint = UInt
+typealias int = Int
+typealias float = Float

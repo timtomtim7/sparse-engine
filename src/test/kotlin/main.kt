@@ -14,5 +14,5 @@ fun main(args: Array<String>)
 		vSync(true)
 	}
 
-	SparseEngine.start(window, TestGame2::class, 100.0)
+	SparseEngine.start(window, TestGame::class, 100.0)
 }

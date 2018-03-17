@@ -1,7 +1,7 @@
 import org.gradle.internal.os.OperatingSystem
 
 group 'blue.sparse'
-version '1.0-SNAPSHOT'
+version '1.0.1'
 
 switch ( OperatingSystem.current() ) {
     case OperatingSystem.WINDOWS:
@@ -18,7 +18,7 @@ switch ( OperatingSystem.current() ) {
 project.ext.lwjglVersion = "3.1.3"
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.30'
 
     repositories {
         mavenCentral()
@@ -30,13 +30,32 @@ buildscript {
 
 apply plugin: 'kotlin'
 
+apply plugin: 'maven-publish'
+
+configure(project) {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                name = "sparse"
+                url "F:\\maven"
+            }
+        }
+    }
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://sparse.blue/maven' }
+    mavenLocal()
 }
 
 dependencies {
-    compile "blue.sparse:math:1.1.2"
+    compile "blue.sparse:math:1.1.3"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:1.2.10"
     compile "org.lwjgl:lwjgl:$lwjglVersion"

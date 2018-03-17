@@ -76,14 +76,21 @@ object SparseEngine
 		this.window = window
 		this.targetFrameRate = targetFrameRate
 
-		initGL()
-
 		val initTime = measureTimeMillis {
+			initGL()
 			game = gameClass.primaryConstructor!!.call()
-			System.gc()
 		}
 
 		Logger.info("Game initialization took ${initTime}ms")
+
+		val postInitTime = measureTimeMillis {
+			game.postInit()
+			System.gc()
+		}
+
+		Logger.info("Game post-initialization took ${postInitTime}ms")
+
+		Logger.info("Total init time: ${initTime + postInitTime}ms")
 
 		var frameCounter = 0.0
 		val frameTimer = FrequencyTimer(1.0 / targetFrameRate)

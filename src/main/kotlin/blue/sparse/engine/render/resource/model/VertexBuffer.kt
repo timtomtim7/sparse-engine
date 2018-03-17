@@ -1,7 +1,9 @@
 package blue.sparse.engine.render.resource.model
 
+import blue.sparse.engine.math.*
 import blue.sparse.engine.util.Serializer
 import blue.sparse.engine.util.Size
+import blue.sparse.logger.Logger
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -57,8 +59,20 @@ class VertexBuffer
 			if(!remaining.hasNext())
 				remaining = classes.iterator()
 
-			if(!remaining.next().isInstance(value))
+			var clazz = remaining.next()
+			clazz = when(clazz)
+			{
+				UInt::class.java -> java.lang.Integer::class.java
+				UShort::class.java -> java.lang.Short::class.java
+				UByte::class.java -> java.lang.Byte::class.java
+				else -> clazz
+			}
+
+			if(!clazz.isInstance(value))
+			{
+				Logger.warn("VertexBuffer expected $clazz, got ${value.javaClass}")
 				return false
+			}
 		}
 
 		return true
