@@ -2,37 +2,32 @@ package blue.sparse.engine.render.resource
 
 import java.util.WeakHashMap
 
-abstract class Resource
-{
+abstract class Resource {
 	private var deleted: Boolean = false
 
-	init
-	{
+	init {
 		resources[this] = Unit
 	}
 
 	protected abstract fun release()
 
-	fun delete()
-	{
-		if(deleted) return
+	fun delete() {
+		if (deleted) return
 		release()
 
 		resources.remove(this)
 		deleted = true
 	}
 
-	protected fun finalize()
-	{
-		delete()
+	protected fun finalize() {
+		//TODO: This was trying to access OpenGL from another thread.
+//		delete()
 	}
 
-	companion object
-	{
+	companion object {
 		private val resources = WeakHashMap<Resource, Unit>()
 
-		internal fun deleteAll()
-		{
+		internal fun deleteAll() {
 			resources.keys.toList().forEach(Resource::delete)
 			resources.clear()
 		}
