@@ -3,6 +3,7 @@ package blue.sparse.engine
 import blue.sparse.engine.errors.glCall
 import blue.sparse.engine.errors.printOpenGLErrors
 import blue.sparse.engine.render.Logo
+import blue.sparse.engine.render.StateManager
 import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.util.MemoryUsage
 import blue.sparse.engine.window.Window
@@ -12,14 +13,11 @@ import blue.sparse.math.util.FrequencyTimer
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL13.GL_MULTISAMPLE
-import org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 import kotlin.system.measureTimeMillis
 
-object SparseEngine
-{
+object SparseEngine {
 	lateinit var window: Window
 		private set
 
@@ -35,17 +33,20 @@ object SparseEngine
 	var running: Boolean = false
 		private set
 
-	private fun initGL()
-	{
+	private fun initGL() {
 		GL.createCapabilities()
-		glCall { glEnable(GL_MULTISAMPLE) }
-		glCall { glEnable(GL_CULL_FACE) }
+//		glCall { glEnable(GL_MULTISAMPLE) }
+//		glCall { glEnable(GL_CULL_FACE) }
+		StateManager.cullFace = true
 		glCall { glFrontFace(GL_CW) }
 		glCall { glCullFace(GL_BACK) }
-		glCall { glEnable(GL_DEPTH_TEST) }
-		glCall { glEnable(GL_DEPTH_CLAMP) }
+		StateManager.depthTest = true
+		StateManager.depthClamp = false
+//		glCall { glEnable(GL_DEPTH_TEST) }
+//		glCall { glEnable(GL_DEPTH_CLAMP) }
 
-		glCall { glEnable(GL_BLEND) }
+//		glCall { glEnable(GL_BLEND) }
+		StateManager.blend = true
 		glCall { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) }
 
 		glClearColor(1f, 1f, 1f, 1f)
@@ -63,14 +64,12 @@ object SparseEngine
 		glClearColor(0f, 0f, 0f, 0f)
 	}
 
-	fun clear()
-	{
+	fun clear() {
 		glCall { glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT or GL11.GL_STENCIL_BUFFER_BIT) }
 	}
 
-	fun start(window: Window, gameClass: KClass<out SparseGame>, targetFrameRate: Double = 0.0)
-	{
-		if(running) throw IllegalStateException("Engine already running")
+	fun start(window: Window, gameClass: KClass<out SparseGame>, targetFrameRate: Double = 0.0) {
+		if (running) throw IllegalStateException("Engine already running")
 		running = true
 
 		this.window = window
@@ -98,10 +97,8 @@ object SparseEngine
 
 		val deltaTimer = DeltaTimer()
 
-		while (!window.requestingClose)
-		{
-			if (window.vSync || targetFrameRate == 0.0 || frameTimer.use())
-			{
+		while (!window.requestingClose) {
+			if (window.vSync || targetFrameRate == 0.0 || frameTimer.use()) {
 //				clear()
 				glCall { glClear(GL11.GL_DEPTH_BUFFER_BIT or GL11.GL_STENCIL_BUFFER_BIT) }
 
@@ -115,8 +112,7 @@ object SparseEngine
 				frameCounter++
 				frameRate = frameCounter / secondTimer.count
 
-				if (secondTimer.use())
-				{
+				if (secondTimer.use()) {
 					val ms = 1000.0 / frameRate
 
 					Logger.debug(String.format("FPS: %8.3f | MS: %5.2f | RAM: %s", frameRate, ms, MemoryUsage.getMemoryUsedString()))

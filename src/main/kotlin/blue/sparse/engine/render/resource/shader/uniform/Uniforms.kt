@@ -22,8 +22,15 @@ class Uniforms internal constructor(val program: ShaderProgram)
 
 	operator fun set(name: String, value: Float) = glCall { glUniform1f(this[name], value) }
 	operator fun set(name: String, value: Int) = glCall { glUniform1i(this[name], value) }
+
 	operator fun set(name: String, value: Vector2f) = glCall { glUniform2f(this[name], value.x, value.y) }
+	fun set(name: String, x: Float, y: Float) = glCall { glUniform2f(this[name], x, y) }
+
 	operator fun set(name: String, value: Vector3f) = glCall { glUniform3f(this[name], value.x, value.y, value.z) }
+	fun set(name: String, x: Float, y: Float, z: Float) = glCall { glUniform3f(this[name], x, y, z) }
+
 	operator fun set(name: String, value: Vector4f) = glCall { glUniform4f(this[name], value.x, value.y, value.z, value.w) }
+	fun set(name: String, x: Float, y: Float, z: Float, w: Float) = glCall { glUniform4f(this[name], x, y, z, w) }
+
 	operator fun set(name: String, value: Matrix4f) = glCall { glUniformMatrix4fv(this[name], false, value.toFloatBuffer()) }
 }

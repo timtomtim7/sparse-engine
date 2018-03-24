@@ -48,7 +48,6 @@ class TestGame : SparseGame() {
 	}
 
 	override fun update(delta: Float) {
-		engine.clear()
 		if (input[Key.E].held)
 			addElement()
 
@@ -57,6 +56,7 @@ class TestGame : SparseGame() {
 	}
 
 	override fun render(delta: Float) {
+		engine.clear()
 		scene.render(delta, camera, shader)
 	}
 }

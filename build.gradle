@@ -1,7 +1,7 @@
 import org.gradle.internal.os.OperatingSystem
 
 group 'blue.sparse'
-version '1.0.1'
+version '1.0.2'
 
 switch ( OperatingSystem.current() ) {
     case OperatingSystem.WINDOWS:

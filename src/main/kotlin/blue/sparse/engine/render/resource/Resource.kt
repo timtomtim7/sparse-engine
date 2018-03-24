@@ -22,7 +22,7 @@ abstract class Resource
 		deleted = true
 	}
 
-	protected fun finialize()
+	protected fun finalize()
 	{
 		delete()
 	}

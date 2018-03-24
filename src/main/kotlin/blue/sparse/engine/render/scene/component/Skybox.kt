@@ -1,7 +1,7 @@
 package blue.sparse.engine.render.scene.component
 
 import blue.sparse.engine.asset.Asset
-import blue.sparse.engine.errors.glCall
+import blue.sparse.engine.render.StateManager
 import blue.sparse.engine.render.camera.Camera
 import blue.sparse.engine.render.resource.Texture
 import blue.sparse.engine.render.resource.bind
@@ -9,17 +9,14 @@ import blue.sparse.engine.render.resource.model.*
 import blue.sparse.engine.render.resource.shader.ShaderProgram
 import blue.sparse.math.vectors.floats.Vector2f
 import blue.sparse.math.vectors.floats.Vector3f
-import org.lwjgl.opengl.GL11.*
 
-class Skybox(private val texture: Texture) : Component
-{
+class Skybox(private val texture: Texture) : Component {
 	private val model: Model
 	override val overridesShader = true
 
 	constructor(asset: Asset) : this(Texture(asset))
 
-	init
-	{
+	init {
 		val layout = VertexLayout()
 		layout.add<Vector3f>()
 		layout.add<Vector2f>()
@@ -99,15 +96,16 @@ class Skybox(private val texture: Texture) : Component
 		array.add(buffer, layout)
 
 		val baseIndices = intArrayOf(2, 1, 0, 0, 3, 2)
-		val indices = IntArray(6*6) { baseIndices[it % 6] + ((it / 6) * 4) }
+		val indices = IntArray(6 * 6) { baseIndices[it % 6] + ((it / 6) * 4) }
 
 		model = IndexedModel(array, indices)
 	}
 
-	override fun render(delta: Float, camera: Camera, shader: ShaderProgram)
-	{
-		glCall { glDisable(GL_DEPTH_TEST) }
-		glCall { glDepthMask(false) }
+	override fun render(delta: Float, camera: Camera, shader: ShaderProgram) {
+//		glCall { glDisable(GL_DEPTH_TEST) }
+//		glCall { glDepthMask(false) }
+		StateManager.depthTest = false
+		StateManager.depthMask = false
 
 		bind(Companion.shader, texture) {
 			Companion.shader.uniforms["uProjection"] = camera.projection
@@ -115,12 +113,13 @@ class Skybox(private val texture: Texture) : Component
 			model.render()
 		}
 
-		glCall { glDepthMask(true) }
-		glCall { glEnable(GL_DEPTH_TEST) }
+		StateManager.depthTest = true
+		StateManager.depthMask = true
+//		glCall { glDepthMask(true) }
+//		glCall { glEnable(GL_DEPTH_TEST) }
 	}
 
-	companion object
-	{
+	companion object {
 		private val shader = ShaderProgram(Asset["shaders/skybox.fs"], Asset["shaders/skybox.vs"])
 	}
 }

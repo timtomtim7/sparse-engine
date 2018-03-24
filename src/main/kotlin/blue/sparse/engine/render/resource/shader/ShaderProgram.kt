@@ -3,21 +3,21 @@ package blue.sparse.engine.render.resource.shader
 import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.errors.ResourceException
 import blue.sparse.engine.errors.glCall
+import blue.sparse.engine.render.StateManager
 import blue.sparse.engine.render.resource.Bindable
 import blue.sparse.engine.render.resource.Resource
 import blue.sparse.engine.render.resource.shader.uniform.Uniforms
 import org.lwjgl.opengl.GL20.*
 
-class ShaderProgram(shaders: Collection<Shader>, deleteShaders: Boolean) : Resource(), Bindable
-{
+class ShaderProgram(shaders: Collection<Shader>, deleteShaders: Boolean) : Resource(), Bindable {
 	internal val id: Int
 	val uniforms: Uniforms
 
-	constructor(vararg shaders: Shader, deleteShaders: Boolean = false): this(shaders.toSet(), deleteShaders)
+	constructor(vararg shaders: Shader, deleteShaders: Boolean = false) : this(shaders.toSet(), deleteShaders)
 
-	constructor(vararg shadersAssets: Pair<Asset, Shader.Type>): this(shadersAssets.map { Shader(it.first, it.second) }, true)
+	constructor(vararg shadersAssets: Pair<Asset, Shader.Type>) : this(shadersAssets.map { Shader(it.first, it.second) }, true)
 
-	constructor(fragment: Asset? = null, vertex: Asset? = null, geometry: Asset? = null): this(
+	constructor(fragment: Asset? = null, vertex: Asset? = null, geometry: Asset? = null) : this(
 			*listOfNotNull(
 					fragment?.let { it to Shader.Type.FRAGMENT },
 					vertex?.let { it to Shader.Type.VERTEX },
@@ -25,8 +25,7 @@ class ShaderProgram(shaders: Collection<Shader>, deleteShaders: Boolean) : Resou
 			).toTypedArray()
 	)
 
-	init
-	{
+	init {
 		id = glCall { glCreateProgram() }
 		shaders.forEach {
 			glCall { glAttachShader(id, it.id) }
@@ -42,25 +41,24 @@ class ShaderProgram(shaders: Collection<Shader>, deleteShaders: Boolean) : Resou
 
 		shaders.forEach {
 			glCall { glDetachShader(id, it.id) }
-			if(deleteShaders)
+			if (deleteShaders)
 				it.delete()
 		}
 
 		uniforms = Uniforms(this)
 	}
 
-	override fun bind()
-	{
-		glCall { glUseProgram(id) }
+	override fun bind() {
+		StateManager.bindShaderProgram(id)
+//		glCall { glUseProgram(id) }
 	}
 
-	override fun unbind()
-	{
-		glCall { glUseProgram(0) }
+	override fun unbind() {
+		StateManager.bindShaderProgram(0)
+//		glCall { glUseProgram(0) }
 	}
 
-	override fun release()
-	{
+	override fun release() {
 		glCall { glDeleteProgram(id) }
 	}
 }

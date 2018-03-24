@@ -2,14 +2,13 @@ package blue.sparse.engine.render.resource
 
 import blue.sparse.engine.asset.Asset
 import blue.sparse.engine.errors.glCall
+import blue.sparse.engine.render.StateManager
 import blue.sparse.engine.util.ColorFormat
 import blue.sparse.extensions.toBufferedImage
 import blue.sparse.extensions.toByteBuffer
 import blue.sparse.math.vectors.ints.Vector2i
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
-import org.lwjgl.opengl.GL13.GL_TEXTURE0
-import org.lwjgl.opengl.GL13.glActiveTexture
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -94,9 +93,10 @@ class Texture(image: BufferedImage) : Resource(), Bindable {
 		}
 	}
 
-	fun bind(id: Int) {
-		glCall { glActiveTexture(GL_TEXTURE0 + id) }
-		bind()
+	fun bind(slot: Int) {
+		StateManager.bindTexture2D(slot, id)
+//		glCall { glActiveTexture(GL_TEXTURE0 + id) }
+//		bind()
 	}
 
 	inline fun <R> bind(id: Int, body: Texture.() -> R): R {
@@ -107,17 +107,20 @@ class Texture(image: BufferedImage) : Resource(), Bindable {
 	}
 
 	override fun bind() {
-		glCall { glBindTexture(GL_TEXTURE_2D, id) }
+		StateManager.bindTexture2D(StateManager.activeTexture, id)
+//		glCall { glBindTexture(GL_TEXTURE_2D, id) }
 	}
 
-	fun unbind(id: Int) {
-		glCall { glActiveTexture(GL_TEXTURE0 + id) }
-		unbind()
-		glCall { glActiveTexture(GL_TEXTURE0) }
+	fun unbind(slot: Int) {
+		StateManager.bindTexture2D(slot, 0)
+//		glCall { glActiveTexture(GL_TEXTURE0 + id) }
+//		unbind()
+//		glCall { glActiveTexture(GL_TEXTURE0) }
 	}
 
 	override fun unbind() {
-		glCall { glBindTexture(GL_TEXTURE_2D, 0) }
+		StateManager.bindTexture2D(StateManager.activeTexture, 0)
+//		glCall { glBindTexture(GL_TEXTURE_2D, 0) }
 	}
 
 	override fun release() {
