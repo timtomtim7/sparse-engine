@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL15.*
 import org.lwjgl.opengl.GL20.glEnableVertexAttribArray
 import org.lwjgl.opengl.GL20.glVertexAttribPointer
 import org.lwjgl.opengl.GL30.*
+import java.nio.ByteBuffer
 
-class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES) : Resource(), Bindable
-{
+class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES) : Resource(), Bindable {
 	internal val id: Int
 
 	private var attributeCount = 0
@@ -25,18 +25,16 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 	var size = 0
 		private set
 
-	init
-	{
+	init {
 		id = glCall { glGenVertexArrays() }
 	}
 
-	fun add(buffer: VertexBuffer, layout: VertexLayout)
-	{
+	fun add(buffer: VertexBuffer, layout: VertexLayout) {
 		bind()
 		if (!buffer.checkLayout(layout))
 			throw IllegalArgumentException("Provided buffer does not conform to the layout.")
 
-		if(!buffers.isEmpty() && size != buffer.size / layout.size)
+		if (!buffers.isEmpty() && size != buffer.size / layout.size)
 			throw IllegalArgumentException("Number of elements in buffer must be consistent ($size)")
 
 		size = buffer.size / layout.size
@@ -50,8 +48,7 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 		var pointer = 0L
 
 		val classes = layout.layout
-		for (clazz in classes)
-		{
+		for (clazz in classes) {
 			val size = Size.of(clazz)
 
 			glCall { glEnableVertexAttribArray(attributeCount) }
@@ -60,7 +57,7 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 			val type = OpenGLType[clazz] ?: throw IllegalStateException("No OpenGLType for $clazz")
 
 			glCall {
-				if(type.isIntType)
+				if (type.isIntType)
 					glVertexAttribIPointer(attributeCount, type.count, type.id, layout.size, pointer)
 				else
 					glVertexAttribPointer(attributeCount, type.count, type.id, false, layout.size, pointer)
@@ -71,8 +68,46 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 		}
 	}
 
-	private enum class OpenGLType(val clazz: Class<*>, val id: Int, val count: Int, val isIntType: Boolean = false)
-	{
+	fun add(buffer: ByteBuffer, layout: VertexLayout) {
+		bind()
+//		if (!buffer.checkLayout(layout))
+//			throw IllegalArgumentException("Provided buffer does not conform to the layout.")
+
+		if (!buffers.isEmpty() && size != buffer.capacity() / layout.size)
+			throw IllegalArgumentException("Number of elements in buffer must be consistent ($size)")
+
+		size = buffer.capacity() / layout.size
+
+		val bufferId = glCall { glGenBuffers() }
+		buffers.add(bufferId)
+
+		glCall { glBindBuffer(GL_ARRAY_BUFFER, bufferId) }
+		glCall { glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW) }
+
+		var pointer = 0L
+
+		val classes = layout.layout
+		for (clazz in classes) {
+			val size = Size.of(clazz)
+
+			glCall { glEnableVertexAttribArray(attributeCount) }
+
+//			val type = getOpenGLType(clazz)
+			val type = OpenGLType[clazz] ?: throw IllegalStateException("No OpenGLType for $clazz")
+
+			glCall {
+				if (type.isIntType)
+					glVertexAttribIPointer(attributeCount, type.count, type.id, layout.size, pointer)
+				else
+					glVertexAttribPointer(attributeCount, type.count, type.id, false, layout.size, pointer)
+			}
+
+			pointer += size
+			attributeCount++
+		}
+	}
+
+	private enum class OpenGLType(val clazz: Class<*>, val id: Int, val count: Int, val isIntType: Boolean = false) {
 		VECTOR2B(Vector2b::class.java, GL_BYTE, 2),
 		VECTOR3B(Vector3b::class.java, GL_BYTE, 3),
 		VECTOR4B(Vector4b::class.java, GL_BYTE, 4),
@@ -90,8 +125,8 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 		VECTOR4F(Vector4f::class.java, GL_FLOAT, 4),
 
 		MATRIX4F(Matrix4f::class.java, GL_FLOAT, 16),
-		FLOAT(Float::class.java, GL_FLOAT, 1),
-		DOUBLE(Double::class.java, GL_DOUBLE, 1),
+		FLOAT(java.lang.Float::class.java, GL_FLOAT, 1),
+		DOUBLE(java.lang.Double::class.java, GL_DOUBLE, 1),
 		BYTE(java.lang.Byte::class.java, GL_BYTE, 1, true),
 		SHORT(java.lang.Short::class.java, GL_SHORT, 1, true),
 		INT(java.lang.Integer::class.java, GL_INT, 1, true),
@@ -100,31 +135,26 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 		USHORT(UShort::class.java, GL_UNSIGNED_SHORT, 1, true),
 		UINT(UInt::class.java, GL_UNSIGNED_INT, 1, true);
 
-		companion object
-		{
+		companion object {
 			operator fun get(clazz: Class<*>) = values().find { it.clazz == clazz }
 		}
 	}
 
-	override fun bind()
-	{
+	override fun bind() {
 		glCall { glBindVertexArray(id) }
 	}
 
-	override fun unbind()
-	{
+	override fun unbind() {
 		glCall { glBindVertexArray(0) }
 	}
 
-	fun render()
-	{
+	fun render() {
 		bind {
 			glCall { glDrawArrays(primitive.id, 0, size) }
 		}
 	}
 
-	override fun release()
-	{
+	override fun release() {
 		glCall { glDeleteVertexArrays(id) }
 		buffers.forEach { glCall { glDeleteBuffers(it) } }
 	}

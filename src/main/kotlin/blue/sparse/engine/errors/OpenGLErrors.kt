@@ -4,7 +4,10 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL30.GL_INVALID_FRAMEBUFFER_OPERATION
 
 fun clearOpenGLErrors() {
-	do while(glGetError() != GL_NO_ERROR)
+//	do while(glGetError() != GL_NO_ERROR)
+	while(true) {
+		if(glGetError() == GL_NO_ERROR) break
+	}
 }
 
 enum class GLError(val id: Int) {
