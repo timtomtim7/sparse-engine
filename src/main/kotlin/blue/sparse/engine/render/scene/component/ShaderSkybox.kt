@@ -52,7 +52,8 @@ class ShaderSkybox(fragmentShader: Shader, private val uniformSetter: ShaderProg
 		val baseIndices = intArrayOf(2, 1, 0, 0, 3, 2)
 		val indices = IntArray(6 * 6) { baseIndices[it % 6] + ((it / 6) * 4) }
 
-		model = IndexedModel(array, indices)
+		model = array.setIndices(indices).toModel()
+//		model = IndexedModel(array, indices)
 	}
 
 	override fun render(delta: Float, camera: Camera, shader: ShaderProgram) {

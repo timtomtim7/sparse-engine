@@ -98,7 +98,7 @@ class Skybox(private val texture: Texture) : Component {
 		val baseIndices = intArrayOf(2, 1, 0, 0, 3, 2)
 		val indices = IntArray(6 * 6) { baseIndices[it % 6] + ((it / 6) * 4) }
 
-		model = IndexedModel(array, indices)
+		model = array.setIndices(indices).toModel()
 	}
 
 	override fun render(delta: Float, camera: Camera, shader: ShaderProgram) {

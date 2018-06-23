@@ -11,12 +11,12 @@ import blue.sparse.math.vectors.floats.Vector2f
 
 class Logo {
 	private val aspectRatio = SparseEngine.window.aspectRatio
-	private val viewProj = Matrix4f.orthographic(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
+	private val viewProjection = Matrix4f.orthographic(-aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
 
 	private val array = VertexArray()
 	private val layout = VertexLayout()
 	private val buffer = VertexBuffer()
-	private val model = IndexedModel(array, intArrayOf(0, 1, 2, 0, 2, 3))
+//	private val model = IndexedModel(array, intArrayOf(0, 1, 2, 0, 2, 3))
 	private val texture = Texture(Asset["sparse_logo_${if (SparseEngine.window.width > 2000) 2048 else 512}.png"])
 
 	private val shader = ShaderProgram(Asset["shaders/logo.fs"], Asset["shaders/logo.vs"])
@@ -31,19 +31,19 @@ class Logo {
 		buffer.add(Vector2f(1f, -1f) / 1.2f, Vector2f(1f, 1f))
 
 		array.add(buffer, layout)
+		array.setIndices(intArrayOf(0, 1, 2, 0, 2, 3))
 	}
 
 	fun render() {
 		bind(shader, texture) {
-			shader.uniforms["uViewProj"] = viewProj
-			model.render()
+			shader.uniforms["uViewProj"] = viewProjection
+			array.render()
 		}
 	}
 
 	fun delete() {
 		shader.delete()
 		texture.delete()
-		model.delete()
 		array.delete()
 	}
 }

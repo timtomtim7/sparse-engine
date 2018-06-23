@@ -42,6 +42,7 @@ class TestGame : SparseGame() {
 
 //			component.transform.setTranslation(translation)
 		component.transform.setRotation(rotation)
+		component.transform.setTranslation(-(camera.controller as PanOrbit).focus)
 //		component.transform.setScale(scale)
 
 		scene.add(VelocityComponent(component, random.nextVector3f(-20f, 20f)))

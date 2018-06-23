@@ -99,10 +99,13 @@ object WavefrontModelLoader: ModelLoader
 		layout.add<Vector2f>()
 		layout.add<Vector3f>()
 
-		val array = VertexArray()
-		array.add(buffer, layout)
+		return VertexArray()
+				.add(buffer, layout)
+				.setIndices(indices.toIntArray())
+				.toModel()
 
-		return IndexedModel(array, indices.toIntArray())
+//		return BasicModel(array)
+//		return IndexedModel(array, indices.toIntArray())
 	}
 
 	private data class Vertex(val position: Vector3f, val texCoord: Vector2f?, val normal: Vector3f?)

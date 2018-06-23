@@ -7,13 +7,12 @@ import org.lwjgl.opengl.GL15.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class IndexedModel(val array: VertexArray, indices: IntArray) : Model, Resource(), Bindable
-{
+@Deprecated("Replaced", ReplaceWith("array.setIndices(indices).toModel()"), DeprecationLevel.ERROR)
+class IndexedModel(val array: VertexArray, indices: IntArray) : Model, Resource(), Bindable {
 	internal val id: Int
 	val size = indices.size
 
-	init
-	{
+	init {
 		id = glCall { glGenBuffers() }
 
 		val buffer = ByteBuffer.allocateDirect(indices.size * 4).order(ByteOrder.nativeOrder())
@@ -22,29 +21,26 @@ class IndexedModel(val array: VertexArray, indices: IntArray) : Model, Resource(
 
 		bind()
 		glCall { glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW) }
-		unbind()
+//		unbind()
 //		bind { glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW) }
 	}
 
-	override fun bind()
-	{
+	override fun bind() {
+		array.bind()
 		glCall { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id) }
 	}
 
-	override fun unbind()
-	{
+	override fun unbind() {
 		glCall { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) }
 	}
 
-	override fun render()
-	{
+	override fun render() {
 		bind(array, this) {
 			glCall { glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0) }
 		}
 	}
 
-	override fun release()
-	{
+	override fun release() {
 		glCall { glDeleteBuffers(id) }
 	}
 }

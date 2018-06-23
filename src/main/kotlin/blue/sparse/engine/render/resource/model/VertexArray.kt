@@ -20,7 +20,12 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 	internal val id: Int
 
 	private var attributeCount = 0
-	private val buffers = ArrayList<Int>()
+	private val vertexBufferIDs = ArrayList<Int>()
+
+	private var indexBufferID = 0
+
+	var indexedSize = 0
+		private set
 
 	var size = 0
 		private set
@@ -29,18 +34,38 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 		id = glCall { glGenVertexArrays() }
 	}
 
-	fun add(buffer: VertexBuffer, layout: VertexLayout) {
+	fun toModel(): Model {
+		return BasicModel(this)
+	}
+
+	fun setIndices(indices: IntArray): VertexArray {
+		bind()
+		if(indexBufferID == 0) {
+			indexBufferID = glCall { glGenBuffers() }
+			//TODO: Deal with failed buffer creation
+		}
+
+		glCall { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID) }
+		glCall { glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW)}
+		indexedSize = indices.size
+
+		return this
+	}
+
+	fun add(buffer: VertexBuffer, layout: VertexLayout): VertexArray {
 		bind()
 		if (!buffer.checkLayout(layout))
 			throw IllegalArgumentException("Provided buffer does not conform to the layout.")
 
-		if (!buffers.isEmpty() && size != buffer.size / layout.size)
+		if (!vertexBufferIDs.isEmpty() && size != buffer.size / layout.size)
 			throw IllegalArgumentException("Number of elements in buffer must be consistent ($size)")
 
 		size = buffer.size / layout.size
 
 		val bufferId = glCall { glGenBuffers() }
-		buffers.add(bufferId)
+		//TODO: Deal with failed buffer creation
+
+		vertexBufferIDs.add(bufferId)
 
 		glCall { glBindBuffer(GL_ARRAY_BUFFER, bufferId) }
 		glCall { glBufferData(GL_ARRAY_BUFFER, buffer.toByteBuffer(), GL_STATIC_DRAW) }
@@ -66,20 +91,22 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 			pointer += size
 			attributeCount++
 		}
+
+		return this
 	}
 
-	fun add(buffer: ByteBuffer, layout: VertexLayout) {
+	fun add(buffer: ByteBuffer, layout: VertexLayout): VertexArray {
 		bind()
 //		if (!buffer.checkLayout(layout))
 //			throw IllegalArgumentException("Provided buffer does not conform to the layout.")
 
-		if (!buffers.isEmpty() && size != buffer.capacity() / layout.size)
+		if (!vertexBufferIDs.isEmpty() && size != buffer.capacity() / layout.size)
 			throw IllegalArgumentException("Number of elements in buffer must be consistent ($size)")
 
 		size = buffer.capacity() / layout.size
 
 		val bufferId = glCall { glGenBuffers() }
-		buffers.add(bufferId)
+		vertexBufferIDs.add(bufferId)
 
 		glCall { glBindBuffer(GL_ARRAY_BUFFER, bufferId) }
 		glCall { glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW) }
@@ -105,6 +132,8 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 			pointer += size
 			attributeCount++
 		}
+
+		return this
 	}
 
 	private enum class OpenGLType(val clazz: Class<*>, val id: Int, val count: Int, val isIntType: Boolean = false) {
@@ -150,12 +179,18 @@ class VertexArray(val primitive: GeometryPrimitive = GeometryPrimitive.TRIANGLES
 
 	fun render() {
 		bind {
-			glCall { glDrawArrays(primitive.id, 0, size) }
+			if(indexBufferID == 0) {
+				glCall { glDrawArrays(primitive.id, 0, size) }
+			}else{
+				glCall { glDrawElements(GL_TRIANGLES, indexedSize, GL_UNSIGNED_INT, 0) }
+			}
 		}
 	}
 
 	override fun release() {
 		glCall { glDeleteVertexArrays(id) }
-		buffers.forEach { glCall { glDeleteBuffers(it) } }
+		vertexBufferIDs.forEach { glCall { glDeleteBuffers(it) } }
+		if(indexBufferID != 0)
+			glDeleteBuffers(indexBufferID)
 	}
 }
